@@ -65,7 +65,7 @@ class ChatListViewModel extends GetxController {
       db.fetchUserStream(userID).listen((data) {
         users.value = data.docs.map((e) => UserModel.fromMap(e.data())).toList();
         print(" Data information");
-        print(data);
+        print(data.docs);
         print(users);
         filteredUsers = users;
 

@@ -15,6 +15,10 @@ class ChatListView extends GetView<ChatListViewModel> {
           itemCount: controller.users.length,
           itemBuilder: (context, index) {
             final user = controller.users[index];
+            final lastMessage = user.lastMessage!['content'];
+            print("last message: ${lastMessage}");
+
+
             return ListTile(
               leading: CircleAvatar(
                 backgroundImage: NetworkImage(user.imageUrl!),
@@ -22,7 +26,7 @@ class ChatListView extends GetView<ChatListViewModel> {
               ),
               title: Text(user.name??'No Name'),
               subtitle: Text(
-                user.lastMessage.toString(),
+                user.lastMessage!['content'].toString(),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
