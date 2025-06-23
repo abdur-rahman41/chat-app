@@ -12,7 +12,12 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
     return Scaffold(
       appBar: AppBar(
         title: Text(controller.receiverName.toString()),
-        leading: IconButton(onPressed: (){Get.back();}, icon: Icon(Icons.arrow_back)),
+        leading: GestureDetector(
+            onTap: (){
+                Get.back();
+              },
+            child: Icon(Icons.arrow_back)
+        ),
       ),
       body: Column(
         children: [

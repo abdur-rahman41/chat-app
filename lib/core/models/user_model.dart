@@ -6,7 +6,7 @@ class UserModel {
   final String? name;
   final String? email;
   final String? imageUrl;
-  final Map<String, dynamic>? lastMessage;
+     Map<String, dynamic>? lastMessage;
   final int? unreadCounter;
 
   UserModel(

@@ -41,6 +41,8 @@ dependencies:
   get_storage:
   shared_preferences: ^2.5.3
   google_sign_in: ^6.3.0
+  image_picker: ^1.1.2
+
 
 
 

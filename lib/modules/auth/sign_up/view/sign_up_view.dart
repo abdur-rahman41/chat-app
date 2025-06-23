@@ -18,6 +18,23 @@ class SignUpView extends GetView<SignUpViewModel> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Obx(() {
+              final imageFile = controller.pickedImage.value;
+              return GestureDetector(
+                onTap: controller.pickImage,
+                child: CircleAvatar(
+                  radius: 50,
+                  backgroundImage: imageFile != null
+                      ? FileImage(imageFile)
+                        : const AssetImage('assets/placeholder.png')
+                  as ImageProvider,
+                  child: imageFile == null
+                      ? const Icon(Icons.add_a_photo, size: 32, color: Colors.white70)
+                      : null,
+                ),
+              );
+            }),
+            const SizedBox(height: 20),
             TextField(
               controller: controller.nameController,
               decoration: const InputDecoration(labelText: 'Name'),

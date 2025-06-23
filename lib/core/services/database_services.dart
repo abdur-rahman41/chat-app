@@ -18,6 +18,7 @@ class DatabaseService {
 
   Future<Map<String, dynamic>?> loadUser(String uid) async {
     try {
+      print("Load Users");
       final res = await _fire.collection("users").doc(uid).get();
 
       if (res.data() != null) {
