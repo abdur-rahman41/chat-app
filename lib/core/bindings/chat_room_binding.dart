@@ -1,4 +1,4 @@
-import 'package:chat_app/modules/chat_list/view_model/chat_list_view_model.dart';
+
 import 'package:chat_app/modules/chat_room/view_model/chat_room_view_model.dart';
 import 'package:get/get.dart';
 

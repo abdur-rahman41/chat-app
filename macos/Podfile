@@ -28,7 +28,10 @@ flutter_macos_podfile_setup
 
 target 'Runner' do
   use_frameworks!
+<<<<<<< HEAD
   use_modular_headers!
+=======
+>>>>>>> d46b55fc9d2cbc5540152afd50cb4342f30425b7
 
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

@@ -11,15 +11,12 @@ import 'package:get/get.dart';
 
 class ChatRoomViewModel extends GetxController {
 
- // final UserModel userModel;
- // final UserModel receiver;
+
 String? receiverName;
   var arguments = Get.arguments;
   RxList<Message> messages = <Message>[].obs;
   final ChatService chatService = ChatService();
-  // final UserModel currentUser = UserModel().obs();
-  //  final UserModel receiver = UserModel().obs();
-  //  String? receiverID="".obs();
+
   String? receiverID="" ;
   UserModel? receiver;
   final userID = PreferenceManager.readData(key: 'user-id');
@@ -29,13 +26,15 @@ String? receiverName;
 
 
 
+
   @override
   void onInit() {
     super.onInit();
     receiver = arguments[0] as UserModel;
+    chatRoomId = arguments[1] as String;
     receiverID = receiver!.uid;
     receiverName = receiver!.name;
-    getChatRoom();
+    // getChatRoom();
 
     print("receiver:${receiver}");
     fetchMessage();
@@ -53,11 +52,21 @@ String? receiverName;
   }
 
   saveMessage() async {
+    print("Text Field : ${messageController.text}");
     log("Send Message");
     try {
-      if (messageController.text.isEmpty) {
-        throw Exception("Please enter some text");
+
+      if (messageController.text.trim().isEmpty) {
+        Get.snackbar(
+          "Empty Message",
+          "Please enter some text",
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return;
       }
+
       final now = DateTime.now();
 
       final message = Message(
@@ -69,7 +78,7 @@ String? receiverName;
       print("Receiver id:{$receiverID}");
       print("Chat room ID:${chatRoomId}");
 
-      await chatService.saveMessage(message.toMap(), chatRoomId);
+       await chatService.saveMessage(message.toMap(), chatRoomId);
 
        chatService.updateLastMessage(userID!, receiverID!,
           message.content!, now.millisecondsSinceEpoch);
@@ -95,11 +104,6 @@ String? receiverName;
     print("Messages:${messages}");
   }
 
-  @override
-  void dispose() {
-    super.dispose();
 
-    _subscription?.cancel();
-  }
 
 }

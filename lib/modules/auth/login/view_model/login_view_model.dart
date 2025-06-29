@@ -28,16 +28,13 @@ class LoginViewModel extends GetxController {
         email: emailController.text,
         password: passwordController.text,
       );
-   print("output result");
-   print(res.user!.uid);
+
    PreferenceManager.writeData(key: 'user-id', value: res.user!.uid);
 
-    //
-    // prefs.setString('user_email', res.user!.uid);
    if(res.user != null)
      {
-        print("user logined Successfully");
-        Get.offAndToNamed(AppRoutes.CHATLIST);
+
+        Get.offAndToNamed(AppRoutes.ROOMLIST);
      }
 
     } on FirebaseAuthException catch (e) {
@@ -45,13 +42,73 @@ class LoginViewModel extends GetxController {
     }
   }
 
-// ✅ Google Sign-In Method
+
+//  Google Sign-In
+//   Future<void> signInWithGoogle() async {
+//     try {
+//
+//       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+//
+//       if (googleUser == null) return;
+//
+//       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+//
+//       final credential = GoogleAuthProvider.credential(
+//         accessToken: googleAuth.accessToken,
+//         idToken: googleAuth.idToken,
+//       );
+//
+//       final userCredential = await _auth.signInWithCredential(credential);
+//       var user = userCredential.user;
+//       if (user== null) {
+//         throw Exception("Google sign-in returned null user.");
+//       }
+//
+//
+//       final client =  await databaseService.loadUser(user.uid);
+//
+//
+//
+//       PreferenceManager.writeData(key: 'user-id', value: user.uid);
+//
+//       if(client!=null)
+//         {
+//           UserModel currentClient = UserModel(
+//               uid: client!['uid'], email: client['email'],name:client['name'],imageUrl: client['imageURL'] );
+//
+//           PreferenceManager.writeData(key: 'user-id', value: userCredential.user!.uid);
+//           Get.offAndToNamed(AppRoutes.ROOMLIST);
+//         }
+//       else
+//         {
+//           UserModel currentClient = UserModel(
+//               uid: user.uid, email: user.email,name:user.displayName ,imageUrl: user.photoURL);
+//           databaseService.saveUser(currentClient.toMap());
+//
+//
+//           print("User credential :${userCredential}");
+//
+//           if (user != null) {
+//             currentUser=userCredential.user;
+//             PreferenceManager.writeData(key: 'user-id', value: user.uid);
+//             String userID =PreferenceManager.readData(key: 'user-id');
+//
+//             print("Google Sign-In Successful: ${user.uid}");
+//             Get.offAndToNamed(AppRoutes.ROOMLIST);
+//           }
+//         }
+//     } catch (e) {
+//       print('Google Sign-In Error: $e');
+//       Get.snackbar("Google Sign-In Failed", e.toString());
+//     }
+//   }
+
+
   Future<void> signInWithGoogle() async {
     try {
-      print("Google Sign In");
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      if (googleUser == null) return; // user cancelled the login
+      if (googleUser == null) return;
 
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
@@ -61,18 +118,40 @@ class LoginViewModel extends GetxController {
       );
 
       final userCredential = await _auth.signInWithCredential(credential);
-      UserModel user = UserModel(
-          uid: userCredential.user!.uid, email: userCredential.user!.email,name:userCredential.user!.displayName );
-      databaseService.saveUser(user.toMap());
+      final user = userCredential.user;
 
+      if (user == null) {
+        throw Exception("Google sign-in returned null user.");
+      }
 
-      print("User credential :${userCredential}");
+      final client = await databaseService.loadUser(user.uid);
 
-      if (userCredential.user != null) {
-        currentUser=userCredential.user;
-        PreferenceManager.writeData(key: 'user-id', value: userCredential.user!.uid);
-        print("Google Sign-In Successful: ${userCredential.user!.uid}");
-        Get.offAndToNamed(AppRoutes.CHATLIST);
+       PreferenceManager.writeData(key: 'user-id', value: user.uid);
+
+      if (client != null) {
+        final currentClient = UserModel(
+          uid: client['uid'],
+          email: client['email'],
+          name: client['name'],
+          imageUrl: client['imageURL'],
+        );
+
+        print("Logged in existing user: ${currentClient.email}");
+        Get.offAndToNamed(AppRoutes.ROOMLIST);
+      } else {
+        final newUser = UserModel(
+          uid: user.uid,
+          email: user.email ?? '',
+          name: user.displayName ?? '',
+          imageUrl: user.photoURL ?? '',
+        );
+
+        await databaseService.saveUser(newUser.toMap());
+
+        currentUser = user;
+
+        print("Google Sign-In Successful: ${user.uid}");
+        Get.offAndToNamed(AppRoutes.ROOMLIST);
       }
     } catch (e) {
       print('Google Sign-In Error: $e');
@@ -80,6 +159,5 @@ class LoginViewModel extends GetxController {
     }
   }
 
-  // // Get current user
-  // User? get currentUser => _auth.currentUser;
+
 }

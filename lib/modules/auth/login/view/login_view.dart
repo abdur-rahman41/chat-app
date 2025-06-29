@@ -45,7 +45,7 @@ class LoginView extends GetView<LoginViewModel> {
             const SizedBox(height: 16),
             OutlinedButton.icon(
               icon: Image.asset(
-                'assets/images/logo.jpeg', // Ensure you have this asset or replace with Icon(Icons.g_translate)
+                'assets/images/logo.jpeg',
                 height: 24,
                 width: 24,
               ),
