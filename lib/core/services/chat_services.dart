@@ -84,7 +84,7 @@ class ChatService {
 
   saveLastMessage(Map<String,dynamic> message, String chatRoomId) async {
     try {
-     
+
       final roomRef= await _fire
           .collection("chatRooms")
           .doc(chatRoomId);

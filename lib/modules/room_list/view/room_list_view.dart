@@ -37,7 +37,7 @@ class RoomListView extends GetView<RoomListViewModel> {
             onTap: (){
 
               PreferenceManager.removeData(key: 'user-id');
-              Get.toNamed(AppRoutes.LOGIN);
+              Get.offNamed(AppRoutes.LOGIN);
             },
             child: Icon(Icons.logout_outlined)
         ),
