@@ -79,9 +79,10 @@ String? receiverName;
       print("Chat room ID:${chatRoomId}");
 
        await chatService.saveMessage(message.toMap(), chatRoomId);
+       await chatService.saveLastMessage(message.toMap(), chatRoomId);
 
-       chatService.updateLastMessage(userID!, receiverID!,
-          message.content!, now.millisecondsSinceEpoch);
+       // chatService.updateLastMessage(userID!, receiverID!,
+       //    message.content!, now.millisecondsSinceEpoch);
 
       messageController.clear();
     } catch (e) {

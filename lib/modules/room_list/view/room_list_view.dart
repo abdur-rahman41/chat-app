@@ -54,7 +54,7 @@ class RoomListView extends GetView<RoomListViewModel> {
             var room = controller.chatRooms[index];
 
 
-            print("Room:${room.users[1]}");
+            // print("Room:${room.users[1]}");
             UserModel info;
             if( room.users.first.uid!=userID)
               {
@@ -80,11 +80,11 @@ class RoomListView extends GetView<RoomListViewModel> {
                 radius: 24,
               ),
               title: Text(info.name??'No name'),
-               // subtitle: Text(
-               //   message.content!??'not yet',
-               //   maxLines: 1,
-               //  overflow: TextOverflow.ellipsis,
-               // ),
+               subtitle: Text(
+                 room.lastMessage?.content??'No Message available',
+                 maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+               ),
               onTap: () {
                 // Navigate to chat detail screen
                 print("Tapped on room: ${room.roomId}");

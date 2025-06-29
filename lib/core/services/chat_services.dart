@@ -18,6 +18,7 @@ class ChatService {
     }
   }
 
+
   Future<QuerySnapshot<Map<String, dynamic>>>  createRoom( List<UserModel>users,List<String>userIds) async {
     try {
 
@@ -49,11 +50,14 @@ class ChatService {
 
 
       final roomRef = _fire.collection("chatRooms").doc(chatRoomId);
+      Map<String,dynamic>? message;
+
       await roomRef.set({
         "roomId": chatRoomId,
         "createdAt": FieldValue.serverTimestamp(),
         "userIds":userIds.toList(),
         "users": users.map((user) => user.toMap()).toList(),
+        "lastMessage":message
       });
 
       final createSnapshot = await _fire.collection("chatRooms")
@@ -80,41 +84,46 @@ class ChatService {
 
   saveLastMessage(Map<String,dynamic> message, String chatRoomId) async {
     try {
-      await _fire
+     
+      final roomRef= await _fire
           .collection("chatRooms")
-          .doc(chatRoomId)
-          .collection("lastMessage")
-          .add(message);
+          .doc(chatRoomId);
+
+
+      await roomRef.set({
+        "lastMessage": message
+      }, SetOptions(merge: true));
+
     } catch (e) {
       rethrow;
     }
   }
 
 
-  updateLastMessage(String currentUid, String receiverUid, String message,
-      int timestamp) async {
-    try {
-      await _fire.collection("users").doc(currentUid).update({
-        "lastMessage": {
-          "content": message,
-          "timestamp": timestamp,
-          "senderId": currentUid
-        },
-        "unreadCounter": FieldValue.increment(1)
-      });
-
-      await _fire.collection("users").doc(receiverUid).update({
-        "lastMessage": {
-          "content": message,
-          "timestamp": timestamp,
-          "senderId": currentUid,
-        },
-        "unreadCounter": 0
-      });
-    } catch (e) {
-      rethrow;
-    }
-  }
+  // updateLastMessage(String currentUid, String receiverUid, String message,
+  //     int timestamp) async {
+  //   try {
+  //     await _fire.collection("users").doc(currentUid).update({
+  //       "lastMessage": {
+  //         "content": message,
+  //         "timestamp": timestamp,
+  //         "senderId": currentUid
+  //       },
+  //       "unreadCounter": FieldValue.increment(1)
+  //     });
+  //
+  //     await _fire.collection("users").doc(receiverUid).update({
+  //       "lastMessage": {
+  //         "content": message,
+  //         "timestamp": timestamp,
+  //         "senderId": currentUid,
+  //       },
+  //       "unreadCounter": 0
+  //     });
+  //   } catch (e) {
+  //     rethrow;
+  //   }
+  // }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(String chatRoomId) {
     return _fire

@@ -45,22 +45,27 @@ class RoomListViewModel extends GetxController {
          }, onError: (e) {
       print(" Error fetching chat rooms: $e");
     });
+
     fetchLastMessges();
 
   }
 
   fetchLastMessges() async {
+    print("Last msg");
 
     var loggedInUserID = PreferenceManager.readData(key: 'user-id');
 
     try {
-
+        print("Chat room length ${chatRooms.length}");
       for (int i = 0; i < chatRooms.length; i++) {
+
         final room = chatRooms[i];
+        print("index ${room.userIds}");
 
         _chatService.getLastMessage(room.roomId).listen((snapshot) {
           if (snapshot.docs.isNotEmpty) {
             var doc = snapshot.docs.first;
+            print("Document${doc.data()}");
             final message = Message.fromMap(doc.data());
 
 

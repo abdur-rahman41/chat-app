@@ -7,13 +7,15 @@ class ChatRoomModel {
   final String createdBy;
   final List<String> userIds;
   final List<UserModel> users;
+  final LastMessage? lastMessage;
 
-  ChatRoomModel({
+  ChatRoomModel( {
     required this.roomId,
     required this.createdAt,
     required this.createdBy,
     required this.userIds,
     required this.users,
+     this.lastMessage,
   });
 
   /// Convert ChatRoomModel to Map (for storing in Firestore)
@@ -36,9 +38,49 @@ class ChatRoomModel {
       users: (map['users'] as List<dynamic>)
           .map((user) => UserModel.fromMap(user))
           .toList(),
+      lastMessage: map['lastMessage'] is Map<String, dynamic>
+          ? LastMessage.fromJson(map['lastMessage'])
+          : null,
+
     );
   }
 }
 
+//Last message of room
+class LastMessage {
+  final String id;
+  final String content;
+  final String senderId;
+  final String receiverId;
+  final int timestamp;
+
+  LastMessage({
+    required this.id,
+    required this.content,
+    required this.senderId,
+    required this.receiverId,
+    required this.timestamp,
+  });
+
+  factory LastMessage.fromJson(Map<String, dynamic> json) {
+    return LastMessage(
+      id: json['id'] ?? '',
+      content: json['content'] ?? '',
+      senderId: json['senderId'] ?? '',
+      receiverId: json['receiverId'] ?? '',
+      timestamp: json['timestamp'] ?? 0,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'content': content,
+      'senderId': senderId,
+      'receiverId': receiverId,
+      'timestamp': timestamp,
+    };
+  }
+}
 
 
