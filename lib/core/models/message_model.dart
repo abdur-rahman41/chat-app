@@ -6,13 +6,15 @@ class Message {
   final String? senderId;
   final String? receiverId;
   final DateTime? timestamp;
+  final String? type;
 
-  Message({
+  Message( {
     this.id,
     this.content,
     this.senderId,
     this.receiverId,
     this.timestamp,
+    this.type
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +24,7 @@ class Message {
       'senderId': senderId,
       'receiverId': receiverId,
       'timestamp': timestamp?.millisecondsSinceEpoch,
+      'type':type,
     };
   }
 
@@ -35,6 +38,7 @@ class Message {
       timestamp: map['timestamp'] != null
           ? DateTime.fromMillisecondsSinceEpoch(map['timestamp'] as int)
           : null,
+      type: map['type']!=null ? map['type'] as String :null
     );
   }
 
@@ -45,6 +49,6 @@ class Message {
 
   @override
   String toString() {
-    return 'Message(id: $id, content: $content, senderId: $senderId, receiverId: $receiverId, timestamp: $timestamp)';
+    return 'Message(id: $id, content: $content, senderId: $senderId, receiverId: $receiverId, timestamp: $timestamp,type:$type)';
   }
 }

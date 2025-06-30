@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:chat_app/core/models/message_model.dart';
 import 'package:chat_app/core/models/user_model.dart';
@@ -8,6 +9,7 @@ import 'package:chat_app/core/services/database_services.dart';
 import 'package:chat_app/core/services/preference_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 
 class ChatRoomViewModel extends GetxController {
 
@@ -23,7 +25,7 @@ String? receiverName;
   StreamSubscription? _subscription;
   String chatRoomId = "";
   final messageController = TextEditingController();
-
+    String? imageController ;
 
 
 
@@ -68,13 +70,27 @@ String? receiverName;
       }
 
       final now = DateTime.now();
+      String? content;
+      String? type;
+      if(imageController!=null)
+        {
+           content =  imageController!;
+           type = "image";
+        }
+      else
+          {
+            content = messageController.text;
+            type ="text";
+          }
 
       final message = Message(
           id: now.millisecondsSinceEpoch.toString(),
-          content: messageController.text,
+          content: content,
           senderId: userID,
           receiverId: receiverID,
-          timestamp: now);
+          timestamp: now,
+          type: type,
+      );
       print("Receiver id:{$receiverID}");
       print("Chat room ID:${chatRoomId}");
 
@@ -104,6 +120,42 @@ String? receiverName;
 
     print("Messages:${messages}");
   }
+
+
+
+Future<void> pickImage() async {
+  File? _selectedImage;
+  final ImagePicker _picker = ImagePicker();
+
+  final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery);
+  print("Picked File ${pickedFile}");
+  if (pickedFile != null) {
+    _selectedImage = File(pickedFile.path);
+  }
+  print("Image picked ${_selectedImage}");
+
+  String? imageUrl = await chatService.uploadImage(_selectedImage!);
+
+
+
+  if (imageUrl != null) {
+    final now = DateTime.now();
+
+    final imageMessage = Message(
+      id: now.millisecondsSinceEpoch.toString(),
+      content: imageUrl,
+      senderId: userID,
+      receiverId: receiverID,
+      timestamp: now,
+      type: 'image',
+    );
+
+    await chatService.saveMessage(imageMessage.toMap(), chatRoomId);
+    await chatService.saveLastMessage(imageMessage.toMap(), chatRoomId);
+  }
+}
+
 
 
 

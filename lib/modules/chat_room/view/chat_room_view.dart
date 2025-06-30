@@ -1,17 +1,31 @@
 import 'package:chat_app/core/models/user_model.dart';
+import 'package:chat_app/core/services/preference_service.dart';
 import 'package:chat_app/modules/chat_room/view_model/chat_room_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ChatRoomView extends GetView<ChatRoomViewModel> {
 
+
   @override
   Widget build(BuildContext context) {
     // controller.initialize(currentId: currentUserId, otherUserId: receiverId);
+    var userID = PreferenceManager.readData(key: 'user-id');
+
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(controller.receiverName.toString()),
+        title: Row(
+          children: [
+            CircleAvatar(
+              backgroundImage: NetworkImage(controller.receiver?.imageUrl??'room_list_view.dart'),
+              radius: 24,
+            ),
+            SizedBox(width: 16,),
+            Text(controller.receiverName.toString()),
+
+        ],
+        ),
         leading: GestureDetector(
             onTap: (){
                 Get.back();
@@ -49,9 +63,14 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
             ),
             Container(
               height: 60,
-              margin: EdgeInsets.only(left: 10, right: 0),
+              padding: EdgeInsets.only(left: 20, right: 0),
               child: Row(
                 children: [
+                  GestureDetector(
+                    child: Icon(Icons.image),
+                    onTap:controller.pickImage
+                  ),
+                  SizedBox(width: 8,),
                   Expanded(
                     child: TextField(
                       controller: controller.messageController,

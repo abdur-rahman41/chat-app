@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:chat_app/core/models/chat_room_model.dart';
 import 'package:chat_app/core/models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get_storage/get_storage.dart';
 
 class ChatService {
@@ -143,4 +146,22 @@ class ChatService {
         .limit(1)
         .snapshots();
   }
+
+
+  Future<String?> uploadImage(File file) async {
+    try {
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+
+      await ref.putFile(file);
+
+      return await ref.getDownloadURL();
+    } catch (e) {
+      print("Image upload failed: $e");
+      return null;
+    }
+  }
+
+
 }
