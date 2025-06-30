@@ -28,7 +28,11 @@ class RoomListView extends GetView<RoomListViewModel> {
           actions: [
             GestureDetector(
                 onTap: (){
-                  openBottomSheet();
+                  // openBottomSheet();
+                  // showChatTypeDialog(context);
+                  // showDynamicActionSheet(context, ['Single', 'Group', 'Broadcast','Multicast']);
+                  showActionSheetUI(context,['Single', 'Group', 'Broadcast','Multicast'] );
+
                 },
                 child: Icon(Icons.add_circle)
             ),
@@ -96,6 +100,93 @@ class RoomListView extends GetView<RoomListViewModel> {
           },
         );
       }),
+
+
+
+    );
+  }
+
+
+  void showActionSheetUI(BuildContext context, List<String> options) {
+    showModalBottomSheet(
+      context: context,
+
+
+      shape:  RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(60),
+      ),
+      backgroundColor: Colors.grey[100],
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ...options.map((option) {
+                return Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      // margin: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        // borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: TextButton(
+                        onPressed: () {
+                          if(option=='Single')
+                            {
+                              openBottomSheet();
+                            }
+                          else if(option == 'Group')
+                            {
+                              Get.toNamed(AppRoutes.GROUPCHATCREATION);
+                            }
+                          // Navigator.pop(context);
+                          print("Selected: $option");
+                          // Handle tap
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          child: Text(
+                            option,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const Divider(height: 1, thickness: 0.5),
+                    // const SizedBox(height: 4),
+                  ],
+                );
+              }).toList(),
+              const SizedBox(height: 8),
+              Container(
+                width: double.infinity,
+                margin: const EdgeInsets.symmetric(horizontal:8, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    child: Text(
+                      "Cancel",
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.red,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

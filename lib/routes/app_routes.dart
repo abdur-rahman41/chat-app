@@ -8,6 +8,8 @@ abstract class AppRoutes {
   static const CHATROOM = '/chatroom';
   static const USERLIST ='/userList';
   static const ROOMLIST ='/roomList';
+  static const GROUPCHATCREATION ='/groupChatCreation';
+
 
 
 }

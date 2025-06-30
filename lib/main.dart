@@ -3,6 +3,8 @@ import 'package:chat_app/modules/auth/login/view/login_view.dart';
 import 'package:chat_app/modules/auth/sign_up/view/sign_up_view.dart';
 import 'package:chat_app/routes/app_pages.dart';
 import 'package:chat_app/routes/app_routes.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -17,6 +19,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform
   );
+
+
+
   runApp(const MyApp());
 }
 

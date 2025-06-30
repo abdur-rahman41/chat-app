@@ -148,20 +148,51 @@ class ChatService {
   }
 
 
+  // Future<String?> uploadImage(File file) async {
+  //   try {
+  //     print("File : ${file}");
+  //     final ref = FirebaseStorage.instance
+  //         .ref()
+  //         .child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
+  //     print("Reference: ${ref}");
+  //
+  //     await ref.putFile(file);
+  //
+  //     return await ref.getDownloadURL();
+  //   } catch (e) {
+  //     print("Image upload failed: $e");
+  //     return null;
+  //   }
+  // }
+
+
   Future<String?> uploadImage(File file) async {
     try {
+      print("File: $file");
+
       final ref = FirebaseStorage.instance
           .ref()
           .child('chat_images/${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-      await ref.putFile(file);
+      print("Reference: $ref");
 
-      return await ref.getDownloadURL();
+      UploadTask uploadTask = ref.putFile(file);
+      TaskSnapshot snapshot = await uploadTask;
+
+      if (snapshot.state == TaskState.success) {
+        final url = await ref.getDownloadURL();
+        print("Upload successful. Download URL: $url");
+        return url;
+      } else {
+        print("Upload failed with state: ${snapshot.state}");
+        return null;
+      }
     } catch (e) {
       print("Image upload failed: $e");
       return null;
     }
   }
+
 
 
 }

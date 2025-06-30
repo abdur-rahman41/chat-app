@@ -1,6 +1,7 @@
 
 
 import 'package:chat_app/core/bindings/chat_room_binding.dart';
+import 'package:chat_app/core/bindings/group_chat_creation_binding.dart';
 import 'package:chat_app/core/bindings/login_binding.dart';
 import 'package:chat_app/core/bindings/room_list_binding.dart';
 import 'package:chat_app/core/bindings/signup_binding.dart';
@@ -10,6 +11,7 @@ import 'package:chat_app/modules/auth/login/view/login_view.dart';
 import 'package:chat_app/modules/auth/sign_up/view/sign_up_view.dart';
 
 import 'package:chat_app/modules/chat_room/view/chat_room_view.dart';
+import 'package:chat_app/modules/group_chat_creation/view/group_chat_creation_view.dart';
 import 'package:chat_app/modules/room_list/view/room_list_view.dart';
 import 'package:chat_app/modules/splash/view/splash_view.dart';
 
@@ -46,7 +48,14 @@ class AppPages {
       name: AppRoutes.ROOMLIST,
       page: () =>  RoomListView(),
       binding: RoomListBinding(),
-    )
+    ),
+
+    GetPage(
+      name: AppRoutes.GROUPCHATCREATION,
+      page: () =>  GroupChatCreationView(),
+      binding: GroupChatCreationBinding(),
+    ),
+
 
 
   ];
