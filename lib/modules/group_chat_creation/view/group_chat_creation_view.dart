@@ -7,12 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
-  final List<String> friendsList = [
-    "Sakib",
-    "Tamim",
-    "Mushfiq",
-  ];
-
+   
+  final RxList<UserModel> friendsList = <UserModel>[].obs;
   final TextEditingController groupNameController = TextEditingController();
 
   @override
@@ -51,21 +47,21 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
 
             const SizedBox(height: 12),
 
-
-
-
             Expanded(
-              child: ListView.builder(
+              child: Obx(() => ListView.builder(
                 itemCount: friendsList.length,
                 itemBuilder: (context, index) {
-                  int cnt = index+1;
+                  int cnt = index + 1;
                   return ListTile(
-                    title: Text(friendsList[index]),
+                    title: Text(friendsList[index].name ?? ""),
                     leading: Text(cnt.toString()),
                   );
                 },
-              ),
+              )),
             ),
+
+
+
 
 
             SizedBox(
@@ -88,7 +84,7 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
   openBottomSheet() async {
 
     final userID = PreferenceManager.readData(key: 'user-id');
-    var selected = await Get.bottomSheet<ChatRoomModel>(
+    var selected = await Get.bottomSheet<UserModel>(
         Container(
           color: Colors.white,
           padding: EdgeInsets.only(top: 32),
@@ -109,9 +105,8 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
                   ],
                 ),
               ),
-
-
               Expanded(
+
                 child: ListView.builder(
                   // padding: EdgeInsets.only(top: 4),
                   itemCount: controller.users.length,
@@ -133,14 +128,16 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
                         overflow: TextOverflow.ellipsis,
                       ),
                       onTap: () async {
-                        var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
-                        if(result != null) {
+                        // var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
+                        // if(result != null) {
+                        //
+                        //
+                        //   Get.back(result: result);
+                        // } else {
+                        //   // show error message
+                        // }
+                        Get.back(result: user);
 
-
-                          Get.back(result: result);
-                        } else {
-                          // show error message
-                        }
                       },
                     );
                   },
@@ -154,23 +151,9 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
     );
 
 
-    if(selected != null) {
-      UserModel user;
-      if(selected.users.first.uid!=userID )
-      {
-        user= selected.users.first ;
 
-      }
-      else
-      {
-        user= selected.users.last ;
-      }
-      UserModel client = UserModel(name: user.name, imageUrl:  user.imageUrl,uid: user.uid);
-
-      Get.toNamed(AppRoutes.CHATROOM, arguments: [client,selected.roomId]);
-
-    }
-
+    print("Selected ${selected?.name}");
+    friendsList.add(selected!);
 
   }
 }
