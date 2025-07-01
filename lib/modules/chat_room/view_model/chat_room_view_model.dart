@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:chat_app/core/models/chat_room_model.dart';
 import 'package:chat_app/core/models/message_model.dart';
 import 'package:chat_app/core/models/user_model.dart';
 import 'package:chat_app/core/services/chat_services.dart';
@@ -20,9 +21,9 @@ String? receiverName;
   final ChatService chatService = ChatService();
 
   String? receiverID="" ;
-  UserModel? receiver;
+  ChatRoomModel? chatRoom;
   final userID = PreferenceManager.readData(key: 'user-id');
-  StreamSubscription? _subscription;
+
   String chatRoomId = "";
   final messageController = TextEditingController();
     String? imageController ;
@@ -32,13 +33,13 @@ String? receiverName;
   @override
   void onInit() {
     super.onInit();
-    receiver = arguments[0] as UserModel;
+    chatRoom = arguments[0] as ChatRoomModel?;
     chatRoomId = arguments[1] as String;
-    receiverID = receiver!.uid;
-    receiverName = receiver!.name;
-    // getChatRoom();
+    // receiverID = room!.uid;
+    // receiverName = room!.name;
+    //  getChatRoom();
 
-    print("receiver:${receiver}");
+    print("receiver:${chatRoom}");
     fetchMessage();
 
   }
@@ -118,7 +119,7 @@ String? receiverName;
       print(data.docs);
     });
 
-    print("Messages:${messages}");
+    print("Messages:${messages.length}");
   }
 
 

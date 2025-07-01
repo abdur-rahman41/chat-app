@@ -8,14 +8,18 @@ class ChatRoomModel {
   final List<String> userIds;
   final List<UserModel> users;
   final LastMessage? lastMessage;
+  final String roomType;
+  final String? roomName;
 
-  ChatRoomModel( {
+  ChatRoomModel(  {
     required this.roomId,
     required this.createdAt,
     required this.createdBy,
     required this.userIds,
     required this.users,
-     this.lastMessage,
+    this.lastMessage,
+    required this.roomType,
+    this.roomName,
   });
 
   /// Convert ChatRoomModel to Map (for storing in Firestore)
@@ -41,6 +45,8 @@ class ChatRoomModel {
       lastMessage: map['lastMessage'] is Map<String, dynamic>
           ? LastMessage.fromJson(map['lastMessage'])
           : null,
+      roomType: map['roomType']??'',
+      roomName: map['roomName']??''
 
     );
   }
@@ -79,6 +85,7 @@ class LastMessage {
       'senderId': senderId,
       'receiverId': receiverId,
       'timestamp': timestamp,
+
     };
   }
 }

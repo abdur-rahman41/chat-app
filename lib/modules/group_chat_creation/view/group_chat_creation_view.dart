@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
    
   final RxList<UserModel> friendsList = <UserModel>[].obs;
-  final TextEditingController groupNameController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
           children: [
             // 🔹 Group name input
             TextField(
-              controller: groupNameController,
+              controller: controller.groupNameController,
               decoration: InputDecoration(
                 hintText: "Enter group name ",
                 border: OutlineInputBorder(
@@ -69,7 +69,10 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
               child: ElevatedButton(
                 onPressed: () {
 
-                  print("Group Name: ${groupNameController.text}");
+
+                  controller.createRoom(friendsList,controller.groupNameController.text);
+                  // friendsList.clear();
+                  // controller.groupNameController.clear();
                 },
                 child:  Text("Create Group",style: TextStyle(color: Colors.blueGrey),),
               ),
@@ -81,79 +84,214 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
   }
 
 
+  // openBottomSheet() async {
+  //
+  //   final userID = PreferenceManager.readData(key: 'user-id');
+  //
+  //   List<UserModel>selectedUsers=[];
+  //   var selected = await Get.bottomSheet<List<UserModel>>(
+  //       Container(
+  //         color: Colors.white,
+  //         padding: EdgeInsets.only(top: 32),
+  //         height: MediaQuery.of(Get.context!).size.height,
+  //         width: MediaQuery.of(Get.context!).size.width,
+  //         child: Column(
+  //           children: [
+  //             // Top bar with close button
+  //             Padding(
+  //               padding: const EdgeInsets.only(top: 16.0, right: 8.0),
+  //               child: Row(
+  //                 mainAxisAlignment: MainAxisAlignment.end,
+  //                 children: [
+  //                   IconButton(
+  //                     icon: Icon(Icons.close),
+  //                     onPressed: () => Get.back(), // Dismiss bottom sheet
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             Expanded(
+  //
+  //               child: ListView.builder(
+  //                 // padding: EdgeInsets.only(top: 4),
+  //                 itemCount: controller.users.length,
+  //                 itemBuilder: (context, index) {
+  //                   RxBool isSelect=true.obs;
+  //                   final user = controller.users[index];
+  //
+  //                   final lastMessage = user.lastMessage?['content'] ?? 'No messages yet';
+  //                   final imageUrl = user.imageUrl ?? 'https://via.placeholder.com/150';
+  //                   final receiverID = user.uid;
+  //
+  //                   return ListTile(
+  //                     leading: CircleAvatar(
+  //                       backgroundImage: NetworkImage(imageUrl),
+  //                       radius: 24,
+  //                     ),
+  //                     title: Text(user.name ?? 'No Name'),
+  //                     subtitle: Text(
+  //                       "Add to chat",
+  //                       maxLines: 1,
+  //                       overflow: TextOverflow.ellipsis,
+  //                     ),
+  //
+  //                     trailing: Obx(() =>
+  //                     isSelect.value
+  //                         ? Icon(Icons.add)
+  //                         : Icon(Icons.close)
+  //                     ),
+  //
+  //                     onTap: () async {
+  //                       // var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
+  //                       // if(result != null) {
+  //                       //
+  //                       //
+  //                       //   Get.back(result: result);
+  //                       // } else {
+  //                       //   // show error message
+  //                       // }
+  //                       selectedUsers.add(user);
+  //                       isSelect.value=false;
+  //                       print("Selected");
+  //                       // Get.back(result: user);
+  //
+  //                     },
+  //                   );
+  //                 },
+  //               ),
+  //             ),
+  //             // Container(
+  //             //   width: double.infinity,
+  //             //   margin: const EdgeInsets.symmetric(horizontal:8, vertical: 8),
+  //             //   decoration: BoxDecoration(
+  //             //     color: Colors.white,
+  //             //     borderRadius: BorderRadius.circular(12),
+  //             //   ),
+  //             //   child: TextButton(
+  //             //     onPressed: () => Get.back(),
+  //             //     child: const Padding(
+  //             //       padding: EdgeInsets.symmetric(vertical: 14),
+  //             //       child: Text(
+  //             //         "Done",
+  //             //         style: TextStyle(
+  //             //           fontSize: 16,
+  //             //           color: Colors.red,
+  //             //           fontWeight: FontWeight.w500,
+  //             //         ),
+  //             //       ),
+  //             //     ),
+  //             //   ),
+  //             // ),
+  //             Padding(
+  //               padding:  EdgeInsets.fromLTRB(0,0,0,16),
+  //               child: ElevatedButton(
+  //                 onPressed: () {
+  //
+  //                       Get.back(result: selectedUsers);
+  //
+  //                 },
+  //                 child:  Text("Done",style: TextStyle(color: Colors.blueGrey),),
+  //               ),
+  //             )
+  //           ],
+  //         ),
+  //       ),
+  //
+  //       isScrollControlled: true
+  //   );
+  //
+  //   friendsList.value = selectedUsers;
+  //
+  //   print("Selected ${selected?.length}");
+  //
+  //   // friendsList.add(selected!);
+  //
+  //
+  //
+  // }
+
+
   openBottomSheet() async {
-
     final userID = PreferenceManager.readData(key: 'user-id');
-    var selected = await Get.bottomSheet<UserModel>(
-        Container(
-          color: Colors.white,
-          padding: EdgeInsets.only(top: 32),
-          height: MediaQuery.of(Get.context!).size.height,
-          width: MediaQuery.of(Get.context!).size.width,
-          child: Column(
-            children: [
-              // Top bar with close button
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0, right: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.close),
-                      onPressed: () => Get.back(), // Dismiss bottom sheet
+    RxSet<String> selectedUserIds = <String>{}.obs; // ✅ Persistent selection
+
+    var selected = await Get.bottomSheet<List<UserModel>>(
+      Container(
+        color: Colors.white,
+        padding: EdgeInsets.only(top: 32),
+        height: MediaQuery.of(Get.context!).size.height,
+        width: MediaQuery.of(Get.context!).size.width,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 16.0, right: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.close),
+                    onPressed: () => Get.back(),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Obx(() => ListView.builder(
+                itemCount: controller.users.length,
+                itemBuilder: (context, index) {
+                  final user = controller.users[index];
+                  final imageUrl = user.imageUrl ?? 'https://via.placeholder.com/150';
+
+                  final isSelected = selectedUserIds.contains(user.uid);
+
+                  print("Is selected ${isSelected}");
+
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(imageUrl),
+                      radius: 24,
                     ),
-                  ],
-                ),
+                    title: Text(user.name ?? 'No Name'),
+                    subtitle: Text("Add to chat"),
+                    trailing: Icon(
+                      isSelected ? Icons.check_circle : Icons.add_circle_outline,
+                      color: isSelected ? Colors.green : Colors.grey,
+                    ),
+                    onTap: () {
+                      if (isSelected) {
+                        selectedUserIds.remove(user.uid);
+                      } else {
+                        selectedUserIds.add(user.uid!);
+                      }
+                    },
+                  );
+                },
+              )),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 16),
+              child: ElevatedButton(
+                onPressed: () {
+                  final selectedUsers = controller.users
+                      .where((u) => selectedUserIds.contains(u.uid))
+                      .toList();
+
+                  Get.back(result: selectedUsers);
+                },
+                child: Text("Done", style: TextStyle(color: Colors.blueGrey)),
               ),
-              Expanded(
-
-                child: ListView.builder(
-                  // padding: EdgeInsets.only(top: 4),
-                  itemCount: controller.users.length,
-                  itemBuilder: (context, index) {
-                    final user = controller.users[index];
-                    final lastMessage = user.lastMessage?['content'] ?? 'No messages yet';
-                    final imageUrl = user.imageUrl ?? 'https://via.placeholder.com/150';
-                    final receiverID = user.uid;
-
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(imageUrl),
-                        radius: 24,
-                      ),
-                      title: Text(user.name ?? 'No Name'),
-                      subtitle: Text(
-                        "Add Friend",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: () async {
-                        // var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
-                        // if(result != null) {
-                        //
-                        //
-                        //   Get.back(result: result);
-                        // } else {
-                        //   // show error message
-                        // }
-                        Get.back(result: user);
-
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+            )
+          ],
         ),
-
-        isScrollControlled: true
+      ),
+      isScrollControlled: true,
     );
 
-
-
-    print("Selected ${selected?.name}");
-    friendsList.add(selected!);
-
+    if (selected != null) {
+      friendsList.value = selected;
+    }
   }
+
+
+
 }

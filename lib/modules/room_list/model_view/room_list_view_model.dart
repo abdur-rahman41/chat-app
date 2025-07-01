@@ -125,7 +125,7 @@ class RoomListViewModel extends GetxController {
       List<String>userIds=[userID,receiverID];
 
 
-       var result = await _chatService.createRoom([user1,user2],userIds);
+       var result = await _chatService.createRoom([user1,user2],userIds,'Single','');
 
 
       if(result.docs.isNotEmpty) {

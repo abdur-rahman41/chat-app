@@ -56,36 +56,56 @@ class RoomListView extends GetView<RoomListViewModel> {
           itemCount: controller.chatRooms.length,
           itemBuilder: (context, index) {
             var room = controller.chatRooms[index];
-
-
-            // print("Room:${room.users[1]}");
-            UserModel info;
-            if( room.users.first.uid!=userID)
-              {
-                info = room.users.first;
+            String roomName = room.roomName ?? 'No room name';
+            print(room.roomType);
+            UserModel? info;
+            if(room.roomType == 'Single') {
+                if( room.users.first.uid!=userID)
+                {
+                  info = room.users.first;
+                }
+                else
+                {
+                  info = room.users.last;
+                }
               }
-            else
-              {
-                info = room.users.last;
-              }
 
-
-            final imageUrl = info.imageUrl ??
+          String? flag = room.users.first.name;
+          print("Frst user name:${info?.name!}");
+            final imageUrl = info?.imageUrl ??
                 'https://via.placeholder.com/150';
 
             final otherUser = room.users.firstWhere(
                   (u) => u.uid != userID,
               orElse: () => room.users.last,
             );
+            // if(room.roomType!=null || room.roomType=='Group')
+            //   {
+            //     return Text(room.roomName??'No name');
+            //   }
 
             return ListTile(
-              leading: CircleAvatar(
+              leading: info?.imageUrl != null ?CircleAvatar(
                 backgroundImage: NetworkImage(imageUrl),
                 radius: 24,
+              ) :Container(
+                height: 48,
+                width:48,
+                padding: EdgeInsets.fromLTRB(14, 4, 4,4),
+                child: Text((flag != null? flag![0].toUpperCase() :'A' )as String  ,style: TextStyle(color: Colors.amber,fontSize: 24),),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.blue,
+                    width: 2,
+                  ),
+
+
+                ),
               ),
-              title: Text(info.name??'No name'),
+              title: Text(room.roomType == 'Single' ? (info?.name ?? "") : roomName),
                subtitle: Text(
-                 room.lastMessage?.content??'No Message available',
+                 room.lastMessage?.content ?? 'No Message available',
                  maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                ),
@@ -93,8 +113,7 @@ class RoomListView extends GetView<RoomListViewModel> {
                 // Navigate to chat detail screen
                 print("Tapped on room: ${room.roomId}");
 
-
-                Get.toNamed(AppRoutes.CHATROOM, arguments: [info,room.roomId]);
+                Get.toNamed(AppRoutes.CHATROOM, arguments: [room,room.roomId]);
               },
             );
           },
@@ -160,6 +179,7 @@ class RoomListView extends GetView<RoomListViewModel> {
                   ],
                 );
               }).toList(),
+
               const SizedBox(height: 8),
               Container(
                 width: double.infinity,
@@ -271,9 +291,9 @@ class RoomListView extends GetView<RoomListViewModel> {
       {
         user= selected.users.last ;
       }
-      UserModel client = UserModel(name: user.name, imageUrl:  user.imageUrl,uid: user.uid);
+      // UserModel client = UserModel(name: user.name, imageUrl:  user.imageUrl,uid: user.uid);
 
-      Get.toNamed(AppRoutes.CHATROOM, arguments: [client,selected.roomId]);
+      Get.toNamed(AppRoutes.CHATROOM, arguments: [selected,selected.roomId]);
 
     }
 

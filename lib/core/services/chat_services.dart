@@ -22,19 +22,41 @@ class ChatService {
   }
 
 
-  Future<QuerySnapshot<Map<String, dynamic>>>  createRoom( List<UserModel>users,List<String>userIds) async {
+  Future<QuerySnapshot<Map<String, dynamic>>>  createRoom( List<UserModel>users,List<String>userIds,String? roomType,String? roomName) async {
     try {
 
       final sortedUserIds = List<String>.from(userIds)..sort();
 
       var chatRoomId = sortedUserIds.join('_');
-      final String userId="";
-      final snapshot=  await _fire.collection("chatRooms")
-                            .where("roomId", isEqualTo: chatRoomId).get();
+
+
+      if(roomType=='Group')
+        {
+          final roomRef = _fire.collection("chatRooms").doc();
+          Map<String,dynamic>? message;
+
+            await roomRef.set({
+              "roomId": chatRoomId,
+              "createdAt": FieldValue.serverTimestamp(),
+              "userIds":userIds.toList(),
+              "users": users.map((user) => user.toMap()).toList(),
+              "lastMessage":message,
+              "roomType":roomType,
+              "roomName":roomName
+            });
+
+            final createSnapshot = await _fire.collection("chatRooms")
+                .where("roomId", isEqualTo: chatRoomId).get();
+
+            print("✅ Firestore: Room '$chatRoomId' created successfully.");
+            return createSnapshot;
+        }
       // final snapshot1=  await _fire.collection("chatRooms")
       //     .where("userIds", arrayContainsAny: userIds)
       //     // .where("userIds", arrayContains: userIds[1])
       //     .get();
+      final snapshot=  await _fire.collection("chatRooms")
+          .where("roomId", isEqualTo: chatRoomId).get();
 
       if (snapshot.docs.isNotEmpty) {
         print("❌ Found existing rooms.");
@@ -60,7 +82,9 @@ class ChatService {
         "createdAt": FieldValue.serverTimestamp(),
         "userIds":userIds.toList(),
         "users": users.map((user) => user.toMap()).toList(),
-        "lastMessage":message
+        "lastMessage":message,
+        "roomType":roomType,
+        "roomName":roomName
       });
 
       final createSnapshot = await _fire.collection("chatRooms")

@@ -10,7 +10,26 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
   @override
   Widget build(BuildContext context) {
     // controller.initialize(currentId: currentUserId, otherUserId: receiverId);
-    var userID = PreferenceManager.readData(key: 'user-id');
+    var currentUserID = PreferenceManager.readData(key: 'user-id');
+    String name;
+    String imageUrl='https://via.placeholder.com/150';
+    if(controller.chatRoom?.roomType=='Single')
+      {
+        if(controller.chatRoom!.users.first.uid!=currentUserID)
+          {
+            name = controller.chatRoom!.users.first.name!;
+            imageUrl = controller.chatRoom!.users.first.imageUrl!;
+          }
+        else
+          {
+            name = controller.chatRoom!.users.last.name!;
+            imageUrl = controller.chatRoom!.users.last.imageUrl!;
+          }
+      }
+    else
+      {
+        name = controller.chatRoom!.roomName!;
+      }
 
 
     return Scaffold(
@@ -18,11 +37,11 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
         title: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(controller.receiver?.imageUrl??'room_list_view.dart'),
+              backgroundImage: NetworkImage(imageUrl??'room_list_view.dart'),
               radius: 24,
             ),
             SizedBox(width: 16,),
-            Text(controller.receiverName.toString()),
+            Text(name),
 
         ],
         ),
@@ -43,10 +62,10 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
                   itemCount: controller.messages.length,
                   itemBuilder: (context, index) {
                     final message = controller.messages[index];
-                    final isMe = message.senderId == controller.receiver?.uid;
+                    final isMe = message.senderId == currentUserID;
         
                     return Align(
-                      alignment: isMe ? Alignment.centerLeft : Alignment.centerRight,
+                      alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
                       child: Container(
                         margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                         padding: const EdgeInsets.all(10),

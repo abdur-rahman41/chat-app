@@ -6,6 +6,7 @@ import 'package:chat_app/core/models/user_model.dart';
 import 'package:chat_app/core/services/chat_services.dart';
 import 'package:chat_app/core/services/database_services.dart';
 import 'package:chat_app/core/services/preference_service.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class GroupChatCreationViewModel extends GetxController{
@@ -19,6 +20,8 @@ class GroupChatCreationViewModel extends GetxController{
   final userID = PreferenceManager.readData(key: 'user-id');
 
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
+
+  final TextEditingController groupNameController = TextEditingController();
 
   @override
   void onInit() {
@@ -90,14 +93,13 @@ class GroupChatCreationViewModel extends GetxController{
     }
   }
 
-  Future<ChatRoomModel?> createRoom(String receiverID,String name, String image) async {
-    print(receiverID);
+  Future<ChatRoomModel?> createRoom(List<UserModel>friendList,String roomName) async {
 
     try {
       final now = DateTime.now();
 
 
-      String chatRoomID = "${userID}_${receiverID}";
+      // String chatRoomID = "${userID}_${receiverID}";
       final client = await db.loadUser(userID);
       final user = UserModel.fromMap(client as Map<String, dynamic>);
       print("user:${user}");
@@ -109,17 +111,27 @@ class GroupChatCreationViewModel extends GetxController{
         imageUrl: user.imageUrl,
 
       );
-      final user2 = UserModel(
-        name: name,
-        uid: receiverID,
-        imageUrl: image,
 
-      );
-      var partner = UserModel(name: name, uid: receiverID);
-      List<String>userIds = [userID, receiverID];
+      // final user2 = UserModel(
+      //   name: name,
+      //   uid: receiverID,
+      //   imageUrl: image,
+      //
+      // );
+      friendList.add(user1);
+      // var partner = UserModel(name: name, uid: receiverID);
+      // List<String?> userIds = friendList.map((u) => u.uid).toList();
 
+      // List<String>userIds=[];
+      //  for(var i in friendList)
+      //    {
+      //      userIds.add(i.uid);
+      //    }
 
-      var result = await _chatService.createRoom([user1, user2], userIds);
+      List<String> userIds = friendList.map((u) => u.uid!).toList();
+
+      var result = await _chatService.createRoom(friendList,userIds,'Group',roomName);
+      friendList.clear();
 
 
       if (result.docs.isNotEmpty) {
