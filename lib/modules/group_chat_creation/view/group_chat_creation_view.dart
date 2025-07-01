@@ -213,7 +213,7 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
 
   openBottomSheet() async {
     final userID = PreferenceManager.readData(key: 'user-id');
-    RxSet<String> selectedUserIds = <String>{}.obs; // ✅ Persistent selection
+    // ✅ Persistent selection
 
     var selected = await Get.bottomSheet<List<UserModel>>(
       Container(
@@ -242,7 +242,9 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
                   final user = controller.users[index];
                   final imageUrl = user.imageUrl ?? 'https://via.placeholder.com/150';
 
-                  final isSelected = selectedUserIds.contains(user.uid);
+                  var result = controller.selectedUserIds.contains(user.uid);
+                  RxBool isSelected = controller.selectedUserIds.contains(user.uid).obs as RxBool;
+
 
                   print("Is selected ${isSelected}");
 
@@ -253,15 +255,28 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
                     ),
                     title: Text(user.name ?? 'No Name'),
                     subtitle: Text("Add to chat"),
-                    trailing: Icon(
-                      isSelected ? Icons.check_circle : Icons.add_circle_outline,
-                      color: isSelected ? Colors.green : Colors.grey,
+                    // trailing: obx(()=>Icon(
+                    //   isSelected ? Icons.check_circle : Icons.add_circle_outline,
+                    //   color: isSelected ? Colors.green : Colors.grey,
+                    // )),
+                    trailing: Obx(() =>
+                     // isSelected.value ? Icon(Icons.add) : Icon(Icons.close),
+                    Icon( isSelected.value ? Icons.check_circle : Icons.add_circle_outline,
+                          color: isSelected.value ? Colors.green : Colors.grey),
+
                     ),
+
+
+
                     onTap: () {
-                      if (isSelected) {
-                        selectedUserIds.remove(user.uid);
+                      print(isSelected.value);
+                      if (isSelected.value) {
+                        // print(isSelected);
+                        controller.selectedUserIds.remove(user.uid);
+                        isSelected.value=false;
                       } else {
-                        selectedUserIds.add(user.uid!);
+                        controller.selectedUserIds.add(user.uid!);
+                        isSelected.value=true;
                       }
                     },
                   );
@@ -273,7 +288,7 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
               child: ElevatedButton(
                 onPressed: () {
                   final selectedUsers = controller.users
-                      .where((u) => selectedUserIds.contains(u.uid))
+                      .where((u) => controller.selectedUserIds.contains(u.uid))
                       .toList();
 
                   Get.back(result: selectedUsers);
@@ -295,3 +310,8 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
 
 
 }
+
+
+
+
+

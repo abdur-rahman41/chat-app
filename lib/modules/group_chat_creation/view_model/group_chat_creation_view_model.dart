@@ -17,6 +17,7 @@ class GroupChatCreationViewModel extends GetxController{
   RxList<UserModel> users = <UserModel>[].obs;
   RxList<Message> messages = <Message>[].obs;
   RxList<String> lastMessages = <String>[].obs;
+  RxSet<String> selectedUserIds = <String>{}.obs;
   final userID = PreferenceManager.readData(key: 'user-id');
 
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
