@@ -12,35 +12,37 @@ class LoginView extends GetView<LoginViewModel> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Sign In')),
+      // appBar: AppBar(title: const Text('Sign In')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: controller.emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: controller.passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-            ),
-            const SizedBox(height: 32),
-            Obx(() => controller.isLoading.value
-                ? const CircularProgressIndicator()
-                : ElevatedButton(
-              onPressed: controller.logIn,
-              child: const Text('Sign In'),
-            )),
-            if (controller.currentUser != null)
-              CircleAvatar(
-                backgroundImage: NetworkImage(controller.currentUser!.photoURL ?? ''),
-                radius: 40,
-              ),
+            //
+            // TextField(
+            //   controller: controller.emailController,
+            //   decoration: const InputDecoration(labelText: 'Email'),
+            //   keyboardType: TextInputType.emailAddress,
+            // ),
+            // const SizedBox(height: 16),
+            // TextField(
+            //   controller: controller.passwordController,
+            //   decoration: const InputDecoration(labelText: 'Password'),
+            //   obscureText: true,
+            // ),
+            // const SizedBox(height: 32),
+            //
+            // Obx(() => controller.isLoading.value
+            //     ? const CircularProgressIndicator()
+            //     : ElevatedButton(
+            //   onPressed: controller.logIn,
+            //   child: const Text('Sign In'),
+            // )),
+            // if (controller.currentUser != null)
+            //   CircleAvatar(
+            //     backgroundImage: NetworkImage(controller.currentUser!.photoURL ?? ''),
+            //     radius: 40,
+            //   ),
 
             const SizedBox(height: 16),
             OutlinedButton.icon(
@@ -57,27 +59,27 @@ class LoginView extends GetView<LoginViewModel> {
             ),
             const SizedBox(height: 16,),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  "Don't have an account? ",
-                  style: TextStyle(color: Colors.grey),
-                ),
-                InkWell(
-                  onTap: () {
-                    Get.offAndToNamed(AppRoutes.SIGNUP);
-                  },
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            // Row(
+            //   mainAxisAlignment: MainAxisAlignment.center,
+            //   children: [
+            //     const Text(
+            //       "Don't have an account? ",
+            //       style: TextStyle(color: Colors.grey),
+            //     ),
+            //     InkWell(
+            //       onTap: () {
+            //         Get.offAndToNamed(AppRoutes.SIGNUP);
+            //       },
+            //       child: const Text(
+            //         "Sign Up",
+            //         style: TextStyle(
+            //           color: Colors.blue,
+            //           fontWeight: FontWeight.bold,
+            //         ),
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
       ),
