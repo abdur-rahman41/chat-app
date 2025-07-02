@@ -28,6 +28,7 @@ class ChatService {
       final sortedUserIds = List<String>.from(userIds)..sort();
 
       var chatRoomId = sortedUserIds.join('_');
+      var now = DateTime.now();
       print("Group room creation 🔥");
 
 
@@ -45,7 +46,9 @@ class ChatService {
               "users": users.map((user) => user.toMap()).toList(),
               "lastMessage":message,
               "roomType":roomType,
-              "roomName":roomName
+              "roomName":roomName,
+              "updateAt":now,
+
             });
             print("Room ref ${roomRef.snapshots().first}");
 
@@ -91,7 +94,8 @@ class ChatService {
         "users": users.map((user) => user.toMap()).toList(),
         "lastMessage":message,
         "roomType":roomType,
-        "roomName":roomName
+        "roomName":roomName,
+        "updateAt":now,
       });
 
 
@@ -123,12 +127,16 @@ class ChatService {
     return _fire
         .collection('chatRooms')
         .where("userIds", arrayContains: userId)
+        // .orderBy("updateAt",descending: true)
+
          // .orderBy("createdAt",descending: true)
         // .orderBy("lastMessage",descending: true)
 
 
     // .orderBy("lastMessage.timestamp", descending: true)
         .snapshots();
+
+
   }
 
 
@@ -138,10 +146,11 @@ class ChatService {
       final roomRef= await _fire
           .collection("chatRooms")
           .doc(chatRoomId);
-
+      var now = DateTime.now();
 
       await roomRef.set({
-        "lastMessage": message
+        "lastMessage": message,
+        "updateAt":now,
       }, SetOptions(merge: true));
 
     } catch (e) {
