@@ -155,7 +155,9 @@ class RoomListView extends GetView<RoomListViewModel> {
                         onPressed: ()  {
                           if(option=='Single')
                             {
+                              Get.back();
                               openBottomSheet();
+                              // Get.back();
                             }
                           else if(option == 'Group')
                             {
@@ -233,7 +235,7 @@ class RoomListView extends GetView<RoomListViewModel> {
                   children: [
                     IconButton(
                       icon: Icon(Icons.close),
-                      onPressed: () => Get.back(), // Dismiss bottom sheet
+                      onPressed: () => Get.back(),
                     ),
                   ],
                 ),
@@ -297,7 +299,7 @@ class RoomListView extends GetView<RoomListViewModel> {
       }
       // UserModel client = UserModel(name: user.name, imageUrl:  user.imageUrl,uid: user.uid);
 
-      Get.offNamed(AppRoutes.CHATROOM, arguments: [selected,selected.roomId]);
+      Get.toNamed(AppRoutes.CHATROOM, arguments: [selected,selected.roomId]);
 
     }
 
