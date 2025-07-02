@@ -85,10 +85,10 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
               padding: EdgeInsets.only(left: 20, right: 0),
               child: Row(
                 children: [
-                  GestureDetector(
-                    child: Icon(Icons.image),
-                    onTap:controller.pickImage
-                  ),
+                  // GestureDetector(
+                  //   child: Icon(Icons.image),
+                  //   onTap:controller.pickImage
+                  // ),
                   SizedBox(width: 8,),
                   Expanded(
                     child: TextField(

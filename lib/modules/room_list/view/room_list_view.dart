@@ -31,7 +31,7 @@ class RoomListView extends GetView<RoomListViewModel> {
                   // openBottomSheet();
                   // showChatTypeDialog(context);
                   // showDynamicActionSheet(context, ['Single', 'Group', 'Broadcast','Multicast']);
-                  showActionSheetUI(context,['Single', 'Group', 'Broadcast','Multicast'] );
+                  showActionSheetUI(context,['Single', 'Group'] );
 
                 },
                 child: Icon(Icons.add_circle)
@@ -148,16 +148,19 @@ class RoomListView extends GetView<RoomListViewModel> {
                       // margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        // borderRadius: BorderRadius.circular(16),
+
+                         borderRadius: BorderRadius.circular(16)
                       ),
                       child: TextButton(
-                        onPressed: () {
+                        onPressed: ()  {
                           if(option=='Single')
                             {
                               openBottomSheet();
                             }
                           else if(option == 'Group')
                             {
+
+                              Get.back();
                               Get.toNamed(AppRoutes.GROUPCHATCREATION);
                             }
                           // Navigator.pop(context);
@@ -260,6 +263,7 @@ class RoomListView extends GetView<RoomListViewModel> {
                       ),
                       onTap: () async {
                        var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
+
                        if(result != null) {
 
 
@@ -293,7 +297,7 @@ class RoomListView extends GetView<RoomListViewModel> {
       }
       // UserModel client = UserModel(name: user.name, imageUrl:  user.imageUrl,uid: user.uid);
 
-      Get.toNamed(AppRoutes.CHATROOM, arguments: [selected,selected.roomId]);
+      Get.offNamed(AppRoutes.CHATROOM, arguments: [selected,selected.roomId]);
 
     }
 

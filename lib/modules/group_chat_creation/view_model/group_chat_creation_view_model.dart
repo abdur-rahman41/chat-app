@@ -22,34 +22,41 @@ class GroupChatCreationViewModel extends GetxController{
 
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
 
-  final TextEditingController groupNameController = TextEditingController();
+  // final TextEditingController groupNameController = TextEditingController();
+  // RxString? groupName ="".obs;
+  TextEditingController groupNameController = TextEditingController();
+
 
   @override
   void onInit() {
     super.onInit();
-    fetchChatRooms();
+    print("Called on init");
+
     fetchUsers();
+    selectedUserIds.clear();
+    print("Selected user Id list ${selectedUserIds.length}");
 
 
   }
 
 
-  void fetchChatRooms() {
-    var userID = PreferenceManager.readData(key: 'user-id');
+  // void fetchChatRooms() {
+  //   var userID = PreferenceManager.readData(key: 'user-id');
+  //
+  //   _chatService.getChatRoomSnapshots(userID).listen((snapshot) {
+  //     print('snapshot data: ${snapshot.docs}');
+  //     chatRooms.value = snapshot.docs
+  //         .map((doc) => ChatRoomModel.fromMap(doc.data()))
+  //         .toList();
+  //
+  //   }, onError: (e) {
+  //     print(" Error fetching chat rooms: $e");
+  //   });
+  //
+  //   fetchLastMessges();
+  //
+  // }
 
-    _chatService.getChatRoomSnapshots(userID).listen((snapshot) {
-      print('snapshot data: ${snapshot.docs}');
-      chatRooms.value = snapshot.docs
-          .map((doc) => ChatRoomModel.fromMap(doc.data()))
-          .toList();
-
-    }, onError: (e) {
-      print(" Error fetching chat rooms: $e");
-    });
-
-    fetchLastMessges();
-
-  }
 
   fetchLastMessges() async {
     print("Last msg");
@@ -137,6 +144,7 @@ class GroupChatCreationViewModel extends GetxController{
 
       if (result.docs.isNotEmpty) {
         var responseData = ChatRoomModel.fromMap(result.docs.first.data());
+
         return responseData;
       } else {
         return null;

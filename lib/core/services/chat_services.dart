@@ -28,15 +28,18 @@ class ChatService {
       final sortedUserIds = List<String>.from(userIds)..sort();
 
       var chatRoomId = sortedUserIds.join('_');
+      print("Group room creation 🔥");
 
 
       if(roomType=='Group')
         {
+          print("Group room creation✅");
+          print("${roomType}");
           final roomRef = _fire.collection("chatRooms").doc();
           Map<String,dynamic>? message;
 
             await roomRef.set({
-              "roomId": chatRoomId,
+              "roomId": roomRef.id,
               "createdAt": FieldValue.serverTimestamp(),
               "userIds":userIds.toList(),
               "users": users.map((user) => user.toMap()).toList(),
@@ -44,11 +47,15 @@ class ChatService {
               "roomType":roomType,
               "roomName":roomName
             });
+            print("Room ref ${roomRef.snapshots().first}");
 
             final createSnapshot = await _fire.collection("chatRooms")
-                .where("roomId", isEqualTo: chatRoomId).get();
+                .where("roomId", isEqualTo: roomRef.id).get();
+           final create = await roomRef.collection("chatRooms").doc();
+          print("✅ Group: Room ${roomRef.id} created successfully.");
+          print("Snapshot : ${create.snapshots().toString()}");
 
-            print("✅ Firestore: Room '$chatRoomId' created successfully.");
+
             return createSnapshot;
         }
       // final snapshot1=  await _fire.collection("chatRooms")
@@ -87,8 +94,11 @@ class ChatService {
         "roomName":roomName
       });
 
+
       final createSnapshot = await _fire.collection("chatRooms")
           .where("roomId", isEqualTo: chatRoomId).get();
+       final create = roomRef.collection('chatRoom').doc();
+
 
       print("✅ Firestore: Room '$chatRoomId' created successfully.");
       return createSnapshot;
@@ -101,13 +111,26 @@ class ChatService {
 
 
 
+  // Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomSnapshots(String userId) {
+  //   return _fire
+  //       .collection('chatRooms')
+  //
+  //        .where("userIds", arrayContains: userId)
+  //       .snapshots();
+  //
+  // }
   Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomSnapshots(String userId) {
     return _fire
         .collection('chatRooms')
+        .where("userIds", arrayContains: userId)
+         // .orderBy("createdAt",descending: true)
+        // .orderBy("lastMessage",descending: true)
 
-         .where("userIds", arrayContains: userId)
+
+    // .orderBy("lastMessage.timestamp", descending: true)
         .snapshots();
   }
+
 
   saveLastMessage(Map<String,dynamic> message, String chatRoomId) async {
     try {
