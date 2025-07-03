@@ -31,6 +31,14 @@ class DatabaseService {
     return null;
   }
 
+  Stream<DocumentSnapshot<Map<String, dynamic>>> loadStreamUser(String uid)
+  {
+    return _fire
+        .collection("users")
+        .doc(uid)
+        .snapshots();
+  }
+
   Future<List<Map<String, dynamic>>?> fetchUsers(String currentUserId) async {
     try {
       final res = await _fire

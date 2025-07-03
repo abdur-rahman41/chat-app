@@ -25,6 +25,8 @@ class SplashViewModel extends GetxController {
 
 
   initiate() {
+    var userId = PreferenceManager.readData(key: 'user-id');
+    print("userId :${userId}");
     Timer(Duration(seconds: 5), () {
       Get.offNamed(
         PreferenceManager.readData(key: 'user-id') == null

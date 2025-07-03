@@ -3,6 +3,7 @@ import 'package:chat_app/core/services/preference_service.dart';
 import 'package:chat_app/modules/chat_room/view_model/chat_room_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class ChatRoomView extends GetView<ChatRoomViewModel> {
 
@@ -12,7 +13,7 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
     // controller.initialize(currentId: currentUserId, otherUserId: receiverId);
     var currentUserID = PreferenceManager.readData(key: 'user-id');
     String name;
-    String imageUrl='https://via.placeholder.com/150';
+    String imageUrl="https://picsum.photos/200";
     if(controller.chatRoom?.roomType=='Single')
       {
         if(controller.chatRoom!.users.first.uid!=currentUserID)
@@ -63,19 +64,108 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
                   itemBuilder: (context, index) {
                     final message = controller.messages[index];
                     final isMe = message.senderId == currentUserID;
+                    UserModel partner;
+                    String partnerImage='';
+                    String partnerName= '';
+                    String partnerMsg='';
+                    String formattedTime = DateFormat('hh:mm a').format(message.timestamp!);
+                    if(isMe==false)
+                      {
+
+                        for(var user in controller.chatRoom!.users){
+                          if(message.senderId == user.uid )
+                            {
+                              partnerImage=user.imageUrl!;
+                              partnerName =user.name!;
+
+                            }
+                        }
+                      }
+                    print("Partner Image:${partnerImage}");
+                    if(isMe==true)
+                      {
+                        return Align(
+                          alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
+                          child:Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: isMe ? Colors.blue[200] : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(message.content!),
+                          ),
+                        );
+
+                      }
+                    if(controller.chatRoom?.roomType=='Single')
+                      {
+                        return Align(
+                            alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
+                            child:
+
+                          Row(
+                            children: [
+                              CircleAvatar(
+
+                                  backgroundImage: NetworkImage(partnerImage)
+                              ),
+                                Container(
+                                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: isMe ? Colors.blue[200] : Colors.grey[300],
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Text(message.content!),
+                              )
+                            ],
+                          ),
+
+
+                        );
+                      }
+                    else
+                      {
+                        return Align(
+                            alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
+                            child:ListTile(
+                              leading: CircleAvatar(
+                                backgroundImage: NetworkImage(partnerImage),
+                                radius: 24,
+                              ) ,
+                              title:Row(children: [
+                                Text(partnerName),
+                                SizedBox(width:8,),
+                                Text(formattedTime,style: TextStyle(fontSize: 10),),
+                              ],) ,
+                              subtitle: Text(message.content!,),
+
+                            )
+
+                          // Row(
+                          //   children: [
+                          //     CircleAvatar(
+                          //
+                          //         backgroundImage: NetworkImage(partnerImage)
+                          //     ),
+                          //       Container(
+                          //       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                          //       padding: const EdgeInsets.all(10),
+                          //       decoration: BoxDecoration(
+                          //         color: isMe ? Colors.blue[200] : Colors.grey[300],
+                          //         borderRadius: BorderRadius.circular(10),
+                          //       ),
+                          //       child: Text(message.content!),
+                          //     )
+                          //   ],
+                          // ),
+
+
+                        );
+                      }
         
-                    return Align(
-                      alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: isMe ? Colors.blue[200] : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Text(message.content!),
-                      ),
-                    );
+
                   },
                 );
               }),
@@ -112,3 +202,5 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
     );
   }
 }
+
+

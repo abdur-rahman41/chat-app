@@ -19,6 +19,7 @@ String? receiverName;
   var arguments = Get.arguments;
   RxList<Message> messages = <Message>[].obs;
   final ChatService chatService = ChatService();
+  DatabaseService db = DatabaseService();
 
   String? receiverID="" ;
   ChatRoomModel? chatRoom;
@@ -122,7 +123,11 @@ String? receiverName;
     print("Messages:${messages.length}");
   }
 
-
+Stream<UserModel> fetchUser(String uid) {
+  return db.loadStreamUser(uid).map((snapshot) {
+    return UserModel.fromMap(snapshot.data() as Map<String, dynamic>);
+  });
+}
 
 Future<void> pickImage() async {
   File? _selectedImage;
