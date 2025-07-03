@@ -61,6 +61,7 @@ class RoomListView extends GetView<RoomListViewModel> {
             String roomName = room.roomName ?? 'No room name';
             print(room.roomType);
             UserModel? info;
+            String flag;
             if(room.roomType == 'Single') {
                 if( room.users.first.uid!=userID)
                 {
@@ -70,9 +71,16 @@ class RoomListView extends GetView<RoomListViewModel> {
                 {
                   info = room.users.last;
                 }
+                flag = room.users.first.name!;
+
+              }
+            else
+              {
+                flag = room.roomName!;
               }
 
-          String? flag = room.users.first.name;
+
+
           print("Frst user name:${info?.name!}");
           print("Update At 🔥 ${room.updateAt}");
             final imageUrl = info?.imageUrl ??
@@ -91,7 +99,8 @@ class RoomListView extends GetView<RoomListViewModel> {
               leading: info?.imageUrl != null ?CircleAvatar(
                 backgroundImage: NetworkImage(imageUrl),
                 radius: 24,
-              ) :Container(
+              )
+                  : Container(
                 height: 48,
                 width:48,
                 padding: EdgeInsets.fromLTRB(14, 4, 4,4),

@@ -13,7 +13,7 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
     // controller.initialize(currentId: currentUserId, otherUserId: receiverId);
     var currentUserID = PreferenceManager.readData(key: 'user-id');
     String name;
-    String imageUrl="https://picsum.photos/200";
+    String? imageUrl;
     if(controller.chatRoom?.roomType=='Single')
       {
         if(controller.chatRoom!.users.first.uid!=currentUserID)
@@ -37,10 +37,24 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
       appBar: AppBar(
         title: Row(
           children: [
-            CircleAvatar(
+            imageUrl!=null ? CircleAvatar(
               backgroundImage: NetworkImage(imageUrl??'room_list_view.dart'),
               radius: 24,
-            ),
+            ) : Container(
+      height: 48,
+      width:48,
+      padding: EdgeInsets.fromLTRB(14, 5, 4,4),
+      child: Text((name != null? name![0].toUpperCase() :'A' )as String  ,style: TextStyle(color: Colors.amber,fontSize: 24),),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(
+          color: Colors.blue,
+          width: 2,
+        ),
+
+
+      ),
+    ),
             SizedBox(width: 16,),
             Text(name),
 
