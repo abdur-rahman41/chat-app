@@ -10,8 +10,9 @@ class ChatRoomModel {
   final LastMessage? lastMessage;
   final String roomType;
   final String? roomName;
+  final Timestamp updateAt;
 
-  ChatRoomModel(  {
+  ChatRoomModel(   {
     required this.roomId,
     required this.createdAt,
     required this.createdBy,
@@ -20,6 +21,7 @@ class ChatRoomModel {
     this.lastMessage,
     required this.roomType,
     this.roomName,
+    required this.updateAt,
   });
 
   /// Convert ChatRoomModel to Map (for storing in Firestore)
@@ -46,7 +48,8 @@ class ChatRoomModel {
           ? LastMessage.fromJson(map['lastMessage'])
           : null,
       roomType: map['roomType']??'',
-      roomName: map['roomName']??''
+      roomName: map['roomName']??'',
+      updateAt: map['updateAt']??''
 
     );
   }

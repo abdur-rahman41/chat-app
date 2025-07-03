@@ -29,7 +29,7 @@ class ChatService {
 
       var chatRoomId = sortedUserIds.join('_');
       var now = DateTime.now();
-      print("Group room creation 🔥");
+      // print("Group room creation 🔥");
 
 
       if(roomType=='Group')
@@ -123,11 +123,12 @@ class ChatService {
   //       .snapshots();
   //
   // }
+
   Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomSnapshots(String userId) {
     return _fire
         .collection('chatRooms')
         .where("userIds", arrayContains: userId)
-        // .orderBy("updateAt",descending: true)
+          // .orderBy("updateAt",descending: true)
 
          // .orderBy("createdAt",descending: true)
         // .orderBy("lastMessage",descending: true)

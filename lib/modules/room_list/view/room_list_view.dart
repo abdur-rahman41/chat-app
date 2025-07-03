@@ -72,6 +72,7 @@ class RoomListView extends GetView<RoomListViewModel> {
 
           String? flag = room.users.first.name;
           print("Frst user name:${info?.name!}");
+          print("Update At 🔥 ${room.updateAt}");
             final imageUrl = info?.imageUrl ??
                 'https://via.placeholder.com/150';
 

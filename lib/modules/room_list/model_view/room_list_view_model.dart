@@ -42,9 +42,12 @@ class RoomListViewModel extends GetxController {
           .map((doc) => ChatRoomModel.fromMap(doc.data()))
           .toList();
 
-         }, onError: (e) {
+      chatRooms.sort((a, b) => b.updateAt.compareTo(a.updateAt));
+
+    }, onError: (e) {
       print(" Error fetching chat rooms: $e");
     });
+
 
     fetchLastMessges();
 
