@@ -59,6 +59,7 @@ class RoomListViewModel extends GetxController {
   }
 
   Future<void> fetchChatRooms() async {
+    isLoading.value=true;
     var userID = PreferenceManager.readData(key: 'user-id');
     await db.updateDeviceToken(PrefKey.userID,PrefKey.DEVICE_UNIQUE);
 
@@ -77,6 +78,7 @@ class RoomListViewModel extends GetxController {
 
 
     fetchLastMessges();
+    isLoading.value=false;
 
 
   }

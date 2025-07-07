@@ -24,7 +24,11 @@ class RoomListView extends GetView<RoomListViewModel> {
       );
     }
 
-    return Scaffold(
+
+
+
+
+    return  Scaffold(
       appBar: AppBar(
           title: Text('Chat Room List'),
           actions: [
@@ -52,9 +56,10 @@ class RoomListView extends GetView<RoomListViewModel> {
 
       ),
       body: Obx(() {
-        if (controller.chatRooms.isEmpty) {
-          return Center(child: Text("No chat rooms found."));
-        }
+        if(controller.isLoading.value == true)
+          {
+            return Center(child: CircularProgressIndicator());
+          }
 
         return RefreshIndicator(
           onRefresh: ()async
@@ -144,6 +149,7 @@ class RoomListView extends GetView<RoomListViewModel> {
 
 
     );
+
   }
 
 
@@ -161,16 +167,33 @@ class RoomListView extends GetView<RoomListViewModel> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ...options.map((option) {
+              ...options.asMap().entries.map((entry){
+                int index = entry.key;
+                String option = entry.value;
+
                 return Column(
+
                   children: [
                     Container(
+
                       width: double.infinity,
                       // margin: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: BoxDecoration(
-                        color: Colors.white,
 
-                         borderRadius: BorderRadius.circular(16)
+                        color: Colors.white,
+                        borderRadius: index == 0
+                            ? const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        )
+                            : BorderRadius.zero,
+
+                        // borderRadius: BorderRadius.only(
+                         //   topLeft: Radius.circular(16),
+                         //   topRight: Radius.circular(16)
+                         // )
+
+                         // borderRadius: BorderRadius.circular(16)
                       ),
                       child: TextButton(
                         onPressed: ()  {
