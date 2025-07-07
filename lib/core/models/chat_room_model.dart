@@ -12,6 +12,7 @@ class ChatRoomModel {
   final String? roomName;
   final Timestamp updateAt;
 
+
   ChatRoomModel(   {
     required this.roomId,
     required this.createdAt,

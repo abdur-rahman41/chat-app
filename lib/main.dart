@@ -6,11 +6,17 @@ import 'package:chat_app/routes/app_routes.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'firebase_options.dart';
+
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  print("🔕 Background Message: ${message.messageId}");
+}
 
 
 Future<void> main() async {
@@ -20,6 +26,7 @@ Future<void> main() async {
       options: DefaultFirebaseOptions.currentPlatform
   );
 
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
 
   runApp(const MyApp());

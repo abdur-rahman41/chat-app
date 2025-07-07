@@ -16,6 +16,19 @@ class DatabaseService {
     }
   }
 
+
+  Future<void> updateDeviceToken(String uid, String newDeviceToken) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'deviceToken': newDeviceToken,
+      });
+      print('Device token updated successfully');
+    } catch (e) {
+      print('Failed to update device token: $e');
+    }
+  }
+
+
   Future<Map<String, dynamic>?> loadUser(String uid) async {
     try {
       print("Load Users");

@@ -3,6 +3,7 @@ import 'package:chat_app/core/services/database_services.dart';
 import 'package:chat_app/core/services/preference_service.dart';
 import 'package:chat_app/routes/app_routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -19,6 +20,27 @@ class LoginViewModel extends GetxController {
 
 
   final isLoading = false.obs;
+
+  void onInit() {
+    super.onInit();
+    print("Called on init");
+
+
+  }
+
+  Future<void> getDeviceToken() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+
+    try {
+      String? token = await messaging.getToken();
+      print("✅ Device Token: $token");
+      PreferenceManager.writeData(key: 'device-token', value:token );
+
+    } catch (e) {
+      print("❌ Error getting device token: $e");
+    }
+  }
 
   // Sign In
    logIn() async {
@@ -107,6 +129,7 @@ class LoginViewModel extends GetxController {
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      getDeviceToken();
 
       if (googleUser == null) return;
 
@@ -133,10 +156,11 @@ class LoginViewModel extends GetxController {
           uid: client['uid'],
           email: client['email'],
           name: client['name'],
-          imageUrl: client['imageURL'],
+          imageUrl: client['imageURL'], deviceToken: PreferenceManager.readData(key: 'device-token') ?? ' '
         );
-
-        print("Logged in existing user: ${currentClient.email}");
+        // await databaseService.saveUser(currentClient.toMap());
+        // await databaseService.updateDeviceToken(PreferenceManager.readData(key: 'user-id'),  PreferenceManager.readData(key: 'device-token'));
+        // print("Logged in existing user: ${currentClient.email}");
         Get.offAndToNamed(AppRoutes.ROOMLIST);
       } else {
         final newUser = UserModel(
@@ -144,6 +168,7 @@ class LoginViewModel extends GetxController {
           email: user.email ?? '',
           name: user.displayName ?? '',
           imageUrl: user.photoURL ?? '',
+          deviceToken: PreferenceManager.readData(key: 'device-token') ?? ' ',
         );
 
         await databaseService.saveUser(newUser.toMap());

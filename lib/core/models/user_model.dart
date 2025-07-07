@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   final String? uid;
   final String? name;
@@ -8,6 +10,8 @@ class UserModel {
   final String? imageUrl;
      Map<String, dynamic>? lastMessage;
   final int? unreadCounter;
+  final String? deviceToken;
+  final Timestamp? updateTime;
 
   UserModel(
       {this.uid,
@@ -15,7 +19,10 @@ class UserModel {
         this.email,
         this.imageUrl,
         this.lastMessage,
-        this.unreadCounter});
+        this.unreadCounter,
+        this.deviceToken,
+        this.updateTime
+      });
 
   Map<String, dynamic> toMap() {
     return <String, dynamic>{
@@ -41,6 +48,7 @@ class UserModel {
           : null,
       unreadCounter:
       map['unreadCounter'] != null ? map['unreadCounter'] as int : null,
+      deviceToken: map['deviceToken']!=null ? map['deviceToken'] as String : null,
     );
   }
 

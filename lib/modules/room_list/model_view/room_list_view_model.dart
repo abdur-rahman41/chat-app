@@ -8,6 +8,7 @@ import 'package:chat_app/core/services/database_services.dart';
 import 'package:chat_app/core/services/preference_service.dart';
 import 'package:chat_app/routes/app_routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 
@@ -22,19 +23,37 @@ class RoomListViewModel extends GetxController {
   final userID = PreferenceManager.readData(key: 'user-id');
 
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
+  final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
 
   @override
   void onInit() {
     super.onInit();
     fetchChatRooms();
     fetchUsers();
+    setupFCM();
+
 
 
   }
+  Future<void> getDeviceToken() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
 
 
-  void fetchChatRooms() {
+    try {
+      String? token = await messaging.getToken();
+      print("✅ Device Token: $token");
+      PreferenceManager.writeData(key: PrefKey.DEVICE_UNIQUE, value:token );
+
+    } catch (e) {
+      print("❌ Error getting device token: $e");
+    }
+  }
+
+  Future<void> fetchChatRooms() async {
     var userID = PreferenceManager.readData(key: 'user-id');
+    await db.updateDeviceToken(PrefKey.userID,PrefKey.DEVICE_UNIQUE);
+
 
     _chatService.getChatRoomSnapshots(userID).listen((snapshot) {
       print('snapshot data: ${snapshot.docs}');
@@ -50,6 +69,7 @@ class RoomListViewModel extends GetxController {
 
 
     fetchLastMessges();
+
 
   }
 
@@ -142,6 +162,42 @@ class RoomListViewModel extends GetxController {
       rethrow;
     }
   }
+
+
+  Future<void> setupFCM() async {
+    FirebaseMessaging messaging = FirebaseMessaging.instance;
+    String? fcmToken = '';
+
+
+    // Ask for permission (iOS only)
+    NotificationSettings settings = await messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('✅ Notification permission granted');
+
+      // Get FCM token
+      fcmToken = await messaging.getToken();
+      print('🔑 FCM Token: $fcmToken');
+
+      // Listen to foreground messages
+      FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+        print('📬 Foreground: ${message.notification?.title}');
+      });
+
+      // When user taps on notification
+      FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+        print('➡️ Opened from background: ${message.notification?.title}');
+      });
+    } else {
+      print('❌ Notification permission denied');
+    }
+  }
+
+
 
 
 }

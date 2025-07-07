@@ -81,8 +81,8 @@ class RoomListView extends GetView<RoomListViewModel> {
 
 
 
-          print("Frst user name:${info?.name!}");
-          print("Update At 🔥 ${room.updateAt}");
+          // print("Frst user name:${info?.name!}");
+          // print("Update At 🔥 ${room.updateAt}");
             final imageUrl = info?.imageUrl ??
                 'https://via.placeholder.com/150';
 
