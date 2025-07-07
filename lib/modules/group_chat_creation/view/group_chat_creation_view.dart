@@ -16,105 +16,108 @@ class GroupChatCreationView extends GetView<GroupChatCreationViewModel> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('New Group Chat ')),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(
-          children: [
+      body: Obx(()=>
+         controller.isLoading.value ? Center(child: CircularProgressIndicator()): Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              children: [
 
-            TextField(
-              controller: controller.groupNameController,
-              onChanged: (value)
-              {
-                  inputText.value=value;
-              }
-              ,
-              decoration: InputDecoration(
-                hintText: "Enter group name ",
-                border: OutlineInputBorder(
+                TextField(
+                  controller: controller.groupNameController,
+                  onChanged: (value)
+                  {
+                    inputText.value=value;
+                  }
+                  ,
+                  decoration: InputDecoration(
+                    hintText: "Enter group name ",
+                    border: OutlineInputBorder(
 
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.person_add),
-                label: const Text("Add Member"),
-                onPressed: () {
-                  openBottomSheet();
-                  print("Add Member tapped");
-                  // Add member logic here
-                },
-              ),
-            ),
-
-            const SizedBox(height: 12),
-
-            Expanded(
-              child: Obx(() => ListView.builder(
-                itemCount: friendsList.length,
-                itemBuilder: (context, index) {
-                  int cnt = index + 1;
-                  String image = friendsList[index].imageUrl??'https://via.placeholder.com/150';
-                  return ListTile(
-                    title: Text(friendsList[index].name ?? ""),
-                    leading: CircleAvatar(
-                        radius: 24,
-                        backgroundImage:NetworkImage(image) ,
-                        
-                    ),
-                  );
-                },
-              )),
-            ),
-
-
-
-
-
-            Padding(
-              padding: EdgeInsets.fromLTRB(4,0,4,12),
-              child: SizedBox(
-                width: double.infinity,
-                child: Obx(()=>
-                   ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: inputText.value.isNotEmpty&&friendsList.isNotEmpty ? Colors.green : Colors.grey,
-                    ),
-
-
-                     onPressed: inputText.value.isNotEmpty && friendsList.isNotEmpty
-                         ? () async {
-                       if (controller.groupNameController.text.trim().isEmpty) {
-                         Get.snackbar(
-                           "Empty Group Name",
-                           "Please enter some text",
-                           snackPosition: SnackPosition.BOTTOM,
-                           backgroundColor: Colors.red,
-                           colorText: Colors.white,
-                         );
-                         return;
-                       }
-
-                       var chatRoom = await controller.createRoom(friendsList, controller.groupNameController.text);
-
-                       Get.delete<GroupChatCreationViewModel>();
-                       Get.offNamed(AppRoutes.CHATROOM,arguments: [chatRoom,chatRoom?.roomId]);
-                     }
-                         : null,
-                    child:  Text("Create Group",
-                      style: TextStyle(color: inputText.value.isNotEmpty&&friendsList.isNotEmpty ? Colors.white : Colors.grey,
-                    ),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    icon: const Icon(Icons.person_add),
+                    label: const Text("Add Member"),
+                    onPressed: () {
+                      openBottomSheet();
+                      print("Add Member tapped");
+                      // Add member logic here
+                    },
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                Expanded(
+                  child: Obx(() => ListView.builder(
+                    itemCount: friendsList.length,
+                    itemBuilder: (context, index) {
+                      int cnt = index + 1;
+                      String image = friendsList[index].imageUrl??'https://via.placeholder.com/150';
+                      return ListTile(
+                        title: Text(friendsList[index].name ?? ""),
+                        leading: CircleAvatar(
+                          radius: 24,
+                          backgroundImage:NetworkImage(image) ,
+
+                        ),
+                      );
+                    },
+                  )),
+                ),
+
+
+
+
+
+                Padding(
+                  padding: EdgeInsets.fromLTRB(4,0,4,12),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Obx(()=>
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: inputText.value.isNotEmpty&&friendsList.isNotEmpty ? Colors.green : Colors.grey,
+                          ),
+
+
+                          onPressed: inputText.value.isNotEmpty && friendsList.isNotEmpty
+                              ? () async {
+                            if (controller.groupNameController.text.trim().isEmpty) {
+                              Get.snackbar(
+                                "Empty Group Name",
+                                "Please enter some text",
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.red,
+                                colorText: Colors.white,
+                              );
+                              return;
+                            }
+
+                            var chatRoom = await controller.createRoom(friendsList, controller.groupNameController.text);
+
+                            Get.delete<GroupChatCreationViewModel>();
+                            Get.offNamed(AppRoutes.CHATROOM,arguments: [chatRoom,chatRoom?.roomId]);
+                          }
+                              : null,
+                          child:  Text("Create Group",
+                            style: TextStyle(color: inputText.value.isNotEmpty&&friendsList.isNotEmpty ? Colors.white : Colors.grey,
+                            ),
+                          ),
+                        ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          )
+
       ),
     );
   }

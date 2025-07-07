@@ -161,7 +161,7 @@ class LoginViewModel extends GetxController {
         // await databaseService.saveUser(currentClient.toMap());
         // await databaseService.updateDeviceToken(PreferenceManager.readData(key: 'user-id'),  PreferenceManager.readData(key: 'device-token'));
         // print("Logged in existing user: ${currentClient.email}");
-        Get.offAndToNamed(AppRoutes.ROOMLIST);
+        Get.offNamed(AppRoutes.ROOMLIST);
       } else {
         final newUser = UserModel(
           uid: user.uid,
@@ -176,7 +176,7 @@ class LoginViewModel extends GetxController {
         currentUser = user;
 
         print("Google Sign-In Successful: ${user.uid}");
-        Get.offAndToNamed(AppRoutes.ROOMLIST);
+        Get.offNamed(AppRoutes.ROOMLIST);
       }
     } catch (e) {
       print('Google Sign-In Error: $e');

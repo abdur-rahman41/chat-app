@@ -28,6 +28,16 @@ class DatabaseService {
     }
   }
 
+  Future<void> updateTime(String uid,Timestamp time) async {
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'updateTime':time,
+      });
+      // print('Time updated successfully');
+    } catch (e) {
+      print('Failed to update Time: $e');
+    }
+  }
 
   Future<Map<String, dynamic>?> loadUser(String uid) async {
     try {

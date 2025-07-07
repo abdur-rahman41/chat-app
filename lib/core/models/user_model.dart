@@ -31,7 +31,8 @@ class UserModel {
       'email': email,
       'imageUrl': imageUrl,
       'lastMessage': lastMessage,
-      'unreadCounter': unreadCounter
+      'unreadCounter': unreadCounter,
+      'updateTime':updateTime
     };
   }
 
@@ -48,7 +49,8 @@ class UserModel {
           : null,
       unreadCounter:
       map['unreadCounter'] != null ? map['unreadCounter'] as int : null,
-      deviceToken: map['deviceToken']!=null ? map['deviceToken'] as String : null,
+      deviceToken: map['deviceToken'] !=null ? map['deviceToken'] as String : null,
+      updateTime: map['updateTime'] !=null ? map['updateTime'] as Timestamp : null
     );
   }
 
@@ -59,6 +61,6 @@ class UserModel {
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, name: $name, email: $email, imageUrl: $imageUrl, lastMessage: $lastMessage, unreadCounter: $unreadCounter)';
+    return 'UserModel(uid: $uid, name: $name, email: $email, imageUrl: $imageUrl, lastMessage: $lastMessage, unreadCounter: $unreadCounter,updateTime:$updateTime)';
   }
 }

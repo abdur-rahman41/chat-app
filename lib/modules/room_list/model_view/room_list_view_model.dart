@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:chat_app/core/models/chat_room_model.dart';
@@ -24,6 +25,10 @@ class RoomListViewModel extends GetxController {
 
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+  Timer? _timer;
+  int _counter = 0;
+  RxBool isLoading = false.obs;
+
 
 
   @override
@@ -32,6 +37,9 @@ class RoomListViewModel extends GetxController {
     fetchChatRooms();
     fetchUsers();
     setupFCM();
+    getTimeUpdate();
+
+
 
 
 
@@ -117,6 +125,8 @@ class RoomListViewModel extends GetxController {
   }
 
  Future<ChatRoomModel?> createRoom(String receiverID,String name, String image) async {
+    isLoading.value=true;
+    print(" ✅ Circular Loading ${isLoading}");
 
     print(receiverID);
 
@@ -153,10 +163,15 @@ class RoomListViewModel extends GetxController {
 
       if(result.docs.isNotEmpty) {
         var responseData = ChatRoomModel.fromMap(result.docs.first.data());
+        isLoading.value=false;
         return responseData;
+
       } else {
+        isLoading.value=false;
         return null;
       }
+
+
 
     } catch (e) {
       rethrow;
@@ -197,7 +212,20 @@ class RoomListViewModel extends GetxController {
     }
   }
 
+getTimeUpdate()
+{
+  var userID = PreferenceManager.readData(key: 'user-id');
+  _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+    // print("⏰ Update at ${DateTime.now()} - counter: $_counter");
 
+
+    db.updateTime(userID,Timestamp.now() );
+
+  });
+
+  // print("Activeness : ${_timer!.isActive}");
+
+}
 
 
 }

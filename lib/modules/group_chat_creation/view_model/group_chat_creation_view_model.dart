@@ -25,6 +25,7 @@ class GroupChatCreationViewModel extends GetxController{
   // final TextEditingController groupNameController = TextEditingController();
   // RxString? groupName ="".obs;
   TextEditingController groupNameController = TextEditingController();
+  RxBool isLoading = false.obs;
 
 
   @override
@@ -105,6 +106,7 @@ class GroupChatCreationViewModel extends GetxController{
 
     try {
       final now = DateTime.now();
+      isLoading.value = true;
 
 
       // String chatRoomID = "${userID}_${receiverID}";
@@ -144,10 +146,13 @@ class GroupChatCreationViewModel extends GetxController{
 
       if (result.docs.isNotEmpty) {
         var responseData = ChatRoomModel.fromMap(result.docs.first.data());
+        isLoading.value=false;
 
         return responseData;
       } else {
+        isLoading.value=false;
         return null;
+
       }
     } catch (e) {
       rethrow;

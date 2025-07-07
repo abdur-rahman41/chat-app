@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:chat_app/core/models/chat_room_model.dart';
 import 'package:chat_app/core/models/user_model.dart';
 import 'package:chat_app/core/services/preference_service.dart';
@@ -54,81 +56,88 @@ class RoomListView extends GetView<RoomListViewModel> {
           return Center(child: Text("No chat rooms found."));
         }
 
-        return ListView.builder(
-          itemCount: controller.chatRooms.length,
-          itemBuilder: (context, index) {
-            var room = controller.chatRooms[index];
-            String roomName = room.roomName ?? 'No room name';
-            print(room.roomType);
-            UserModel? info;
-            String flag;
-            if(room.roomType == 'Single') {
-                if( room.users.first.uid!=userID)
-                {
-                  info = room.users.first;
-                }
-                else
-                {
-                  info = room.users.last;
-                }
-                flag = room.users.first.name!;
-
-              }
-            else
-              {
-                flag = room.roomName!;
-              }
-
-
-
-          // print("Frst user name:${info?.name!}");
-          // print("Update At 🔥 ${room.updateAt}");
-            final imageUrl = info?.imageUrl ??
-                'https://via.placeholder.com/150';
-
-            final otherUser = room.users.firstWhere(
-                  (u) => u.uid != userID,
-              orElse: () => room.users.last,
-            );
-            // if(room.roomType!=null || room.roomType=='Group')
-            //   {
-            //     return Text(room.roomName??'No name');
-            //   }
-
-            return ListTile(
-              leading: info?.imageUrl != null ?CircleAvatar(
-                backgroundImage: NetworkImage(imageUrl),
-                radius: 24,
-              )
-                  : Container(
-                height: 48,
-                width:48,
-                padding: EdgeInsets.fromLTRB(14, 4, 4,4),
-                child: Text((flag != null? flag![0].toUpperCase() :'A' )as String  ,style: TextStyle(color: Colors.amber,fontSize: 24),),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(
-                    color: Colors.blue,
-                    width: 2,
-                  ),
-
-
-                ),
-              ),
-              title: Text(room.roomType == 'Single' ? (info?.name ?? "") : roomName),
-               subtitle: Text(
-                 room.lastMessage?.content ?? 'No Message available',
-                 maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-               ),
-              onTap: () {
-                // Navigate to chat detail screen
-                print("Tapped on room: ${room.roomId}");
-
-                Get.toNamed(AppRoutes.CHATROOM, arguments: [room,room.roomId]);
-              },
-            );
+        return RefreshIndicator(
+          onRefresh: ()async
+          {
+            await controller.fetchChatRooms();
+            await controller.fetchUsers();
           },
+          child: ListView.builder(
+            itemCount: controller.chatRooms.length,
+            itemBuilder: (context, index) {
+              var room = controller.chatRooms[index];
+              String roomName = room.roomName ?? 'No room name';
+              print(room.roomType);
+              UserModel? info;
+              String flag;
+              if(room.roomType == 'Single') {
+                  if( room.users.first.uid!=userID)
+                  {
+                    info = room.users.first;
+                  }
+                  else
+                  {
+                    info = room.users.last;
+                  }
+                  flag = room.users.first.name!;
+
+                }
+              else
+                {
+                  flag = room.roomName!;
+                }
+
+
+
+            // print("Frst user name:${info?.name!}");
+            // print("Update At 🔥 ${room.updateAt}");
+              final imageUrl = info?.imageUrl ??
+                  'https://via.placeholder.com/150';
+
+              final otherUser = room.users.firstWhere(
+                    (u) => u.uid != userID,
+                orElse: () => room.users.last,
+              );
+              // if(room.roomType!=null || room.roomType=='Group')
+              //   {
+              //     return Text(room.roomName??'No name');
+              //   }
+
+              return ListTile(
+                leading: info?.imageUrl != null ?CircleAvatar(
+                  backgroundImage: NetworkImage(imageUrl),
+                  radius: 24,
+                )
+                    : Container(
+                  height: 48,
+                  width:48,
+                  padding: EdgeInsets.fromLTRB(14, 4, 4,4),
+                  child: Text((flag != null? flag![0].toUpperCase() :'A' )as String  ,style: TextStyle(color: Colors.amber,fontSize: 24),),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    border: Border.all(
+                      color: Colors.blue,
+                      width: 2,
+                    ),
+
+
+                  ),
+                ),
+                title: Text(room.roomType == 'Single' ? (info?.name ?? "") : roomName),
+                 subtitle: Text(
+                   room.lastMessage?.content ?? 'No Message available',
+                   maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                 ),
+                onTap: () {
+                  // Navigate to chat detail screen
+                  print("Tapped on room: ${room.roomId}");
+
+                  Get.toNamed(AppRoutes.CHATROOM, arguments: [room,room.roomId]);
+                },
+              );
+            },
+          ),
         );
       }),
 
@@ -255,40 +264,77 @@ class RoomListView extends GetView<RoomListViewModel> {
 
 
               Expanded(
-                child: ListView.builder(
-                  // padding: EdgeInsets.only(top: 4),
-                  itemCount: controller.users.length,
-                  itemBuilder: (context, index) {
-                    final user = controller.users[index];
-                    final lastMessage = user.lastMessage?['content'] ?? 'No messages yet';
-                    final imageUrl = user.imageUrl ?? 'https://via.placeholder.com/150';
-                    final receiverID = user.uid;
+                child: Obx(()=>
+                    controller.isLoading.value == true ? Center(child: CircularProgressIndicator()): ListView.builder(
+                      // padding: EdgeInsets.only(top: 4),
+                      itemCount: controller.users.length,
+                      itemBuilder: (context, index) {
+                        final user = controller.users[index];
+                        final lastMessage = user.lastMessage?['content'] ?? 'No messages yet';
+                        final imageUrl = user.imageUrl ?? 'https://via.placeholder.com/150';
+                        final receiverID = user.uid;
 
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(imageUrl),
-                        radius: 24,
-                      ),
-                      title: Text(user.name ?? 'No Name'),
-                      subtitle: Text(
-                        "Add Friend",
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      onTap: () async {
-                       var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
+                        Obx(()=>
 
-                       if(result != null) {
+                        controller.isLoading.value == true ? CircularProgressIndicator( color: Colors.blueGrey,) : ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(imageUrl),
+                            radius: 24,
+                          ),
+                          title: Text(user.name ?? 'No Name'),
+                          subtitle: Text(
+                            "Add Friend",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onTap: () async {
+                            var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
+
+                            if(result != null) {
 
 
-                         Get.back(result: result);
-                       } else {
-                         // show error message
-                       }
+                              Get.back(result: result);
+                            } else {
+
+                              // show error message
+                            }
+                          },
+                        )
+                        );
+
+
+                        return  ListTile(
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(imageUrl),
+                            radius: 24,
+                          ),
+                          title: Text(user.name ?? 'No Name'),
+                          subtitle: Text(
+                            "Add Friend",
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          onTap: () async {
+
+                            var result =  await controller.createRoom(receiverID!, user.name!, user.imageUrl!);
+
+                            if(result != null) {
+
+
+                              Get.back(result: result);
+                            } else {
+
+                              // show error message
+                            }
+                          },
+                        );
+
+
+
+
                       },
-                    );
-                  },
-                ),
+                    ),
+                )
               ),
             ],
           ),
