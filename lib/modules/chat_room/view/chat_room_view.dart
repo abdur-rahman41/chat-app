@@ -74,6 +74,7 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
               child: Obx(() {
                 return ListView.builder(
                   reverse: true,
+
                   itemCount: controller.messages.length,
                   itemBuilder: (context, index) {
                     final message = controller.messages[index];
@@ -98,89 +99,137 @@ class ChatRoomView extends GetView<ChatRoomViewModel> {
                     print("Partner Image:${partnerImage}");
                     if(isMe==true)
                       {
-                        return Align(
-                          alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
-                          child:Container(
-                            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              color: isMe ? Colors.blue[200] : Colors.grey[300],
-                              borderRadius: BorderRadius.circular(10),
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Align(
+                            alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
+                            child:Container(
+                              margin: const EdgeInsets.fromLTRB(64, 4, 4, 4),
+                              padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                              decoration: BoxDecoration(
+                                color: isMe ? Colors.blue[200] : Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(message.content!),
                             ),
-                            child: Text(message.content!),
                           ),
                         );
 
                       }
+
+
                     if(controller.chatRoom?.roomType=='Single')
                       {
-                        return Align(
-                            alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
-                            child:
 
-                          Row(
-                            children: [
-                              CircleAvatar(
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Align(
+                              alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
+                              child:
 
-                                  backgroundImage: NetworkImage(partnerImage)
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+
+                                      backgroundImage: NetworkImage(partnerImage)
+                                  ),
+                                    Container(
+                                    margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: isMe ? Colors.blue[200] : Colors.grey[300],
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Text(message.content!),
+                                  )
+                                ],
                               ),
-                                Container(
-                                margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: isMe ? Colors.blue[200] : Colors.grey[300],
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Text(message.content!),
-                              )
-                            ],
+
+                            ),
+
+
+
+
                           ),
-
-
                         );
                       }
                     else
                       {
-                        return Align(
-                            alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
-                            child:ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(partnerImage),
-                                radius: 24,
-                              ) ,
-                              title:Row(children: [
-                                Text(partnerName),
-                                SizedBox(width:8,),
-                                Text(formattedTime,style: TextStyle(fontSize: 10),),
-                              ],) ,
-                              subtitle: Text(message.content!,),
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom:8),
+                          child: Align(
+                              alignment: isMe ?  Alignment.centerRight :Alignment.centerLeft,
 
-                            )
-
-                          // Row(
-                          //   children: [
-                          //     CircleAvatar(
-                          //
-                          //         backgroundImage: NetworkImage(partnerImage)
-                          //     ),
-                          //       Container(
-                          //       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                          //       padding: const EdgeInsets.all(10),
-                          //       decoration: BoxDecoration(
-                          //         color: isMe ? Colors.blue[200] : Colors.grey[300],
-                          //         borderRadius: BorderRadius.circular(10),
-                          //       ),
-                          //       child: Text(message.content!),
-                          //     )
-                          //   ],
-                          // ),
+                              // child:ListTile(
+                              //   leading: CircleAvatar(
+                              //     backgroundImage: NetworkImage(partnerImage),
+                              //     radius: 24,
+                              //   ) ,
+                              //   title:Row(children: [
+                              //     Text(partnerName),
+                              //     SizedBox(width:8,),
+                              //     Text(formattedTime,style: TextStyle(fontSize: 10),),
+                              //   ],) ,
+                              //   subtitle: Text(message.content!,),
+                              //
+                              // )
 
 
+
+                          child: Container(
+
+                            child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+
+                                          backgroundImage: NetworkImage(partnerImage)
+                                      ),
+                                      Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(partnerName),
+                                              SizedBox(width: 4,),
+                                              Text(formattedTime,style: TextStyle(fontSize: 10),),
+
+                                            ],
+                                          ),
+                                          Container(
+                                            margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                                            padding: const EdgeInsets.all(10),
+                                            decoration: BoxDecoration(
+                                              color: isMe ? Colors.blue[200] : Colors.grey[300],
+                                              borderRadius: BorderRadius.circular(10),
+                                            ),
+                                            child: Text(message.content!),
+                                          )
+
+                                      ],),
+
+
+
+                                    ],
+                                  ),
+                          ),
+
+
+
+
+
+                          ),
                         );
                       }
+                    SizedBox(height: 16,);
+
         
 
                   },
+
                 );
               }),
             ),
