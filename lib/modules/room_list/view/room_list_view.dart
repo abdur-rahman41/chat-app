@@ -13,6 +13,8 @@ class RoomListView extends GetView<RoomListViewModel> {
 
   @override
   Widget build(BuildContext context) {
+    controller.analytics.setCurrentScreen(screenName: 'RoomListPage');
+
     var userID = PreferenceManager.readData(key: 'user-id');
 
     if (userID == null || userID.isEmpty) {
@@ -122,8 +124,19 @@ class RoomListView extends GetView<RoomListViewModel> {
                   overflow: TextOverflow.ellipsis,
                 ),
                 onTap: () {
-                  // Navigate to chat detail screen
+
                   print("Tapped on room: ${room.roomId}");
+                  controller.analytics.logEvent(
+                    name: 'open_chat_room',
+                    parameters: {
+                      'room_id': room.roomId,
+                      'room_type': room.roomType,
+                      'participants': room.userIds.join(','),
+                    },
+                  ).then((value){
+                    print("Successfully Fired");
+                  });
+
 
                   Get.toNamed(AppRoutes.CHATROOM,
                       arguments: [room, room.roomId]);

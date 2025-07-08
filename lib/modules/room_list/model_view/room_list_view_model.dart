@@ -9,6 +9,7 @@ import 'package:chat_app/core/services/database_services.dart';
 import 'package:chat_app/core/services/preference_service.dart';
 import 'package:chat_app/routes/app_routes.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
@@ -16,6 +17,8 @@ import 'dart:convert';
 class RoomListViewModel extends GetxController {
   final ChatService _chatService = ChatService();
   final DatabaseService db = DatabaseService();
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
   final currentReceiver = UserModel();
   RxList<UserModel> users = <UserModel>[].obs;
   RxList<Message> messages = <Message>[].obs;
