@@ -21,88 +21,76 @@ class ChatService {
     }
   }
 
-
-  Future<QuerySnapshot<Map<String, dynamic>>>  createRoom( List<UserModel>users,List<String>userIds,String? roomType,String? roomName) async {
+  Future<QuerySnapshot<Map<String, dynamic>>> createRoom(List<UserModel> users,
+      List<String> userIds, String? roomType, String? roomName) async {
     try {
-
       final sortedUserIds = List<String>.from(userIds)..sort();
 
       var chatRoomId = sortedUserIds.join('_');
       var now = DateTime.now();
       // print("Group room creation 🔥");
 
+      if (roomType == 'Group') {
+        print("Group room creation✅");
+        print("${roomType}");
+        final roomRef = _fire.collection("chatRooms").doc();
+        Map<String, dynamic>? message;
 
-      if(roomType=='Group')
-        {
-          print("Group room creation✅");
-          print("${roomType}");
-          final roomRef = _fire.collection("chatRooms").doc();
-          Map<String,dynamic>? message;
+        await roomRef.set({
+          "roomId": roomRef.id,
+          "createdAt": FieldValue.serverTimestamp(),
+          "userIds": userIds.toList(),
+          "users": users.map((user) => user.toMap()).toList(),
+          "lastMessage": message,
+          "roomType": roomType,
+          "roomName": roomName,
+          "updateAt": now,
+        });
+        print("Room ref ${roomRef.snapshots().first}");
 
-            await roomRef.set({
-              "roomId": roomRef.id,
-              "createdAt": FieldValue.serverTimestamp(),
-              "userIds":userIds.toList(),
-              "users": users.map((user) => user.toMap()).toList(),
-              "lastMessage":message,
-              "roomType":roomType,
-              "roomName":roomName,
-              "updateAt":now,
+        final createSnapshot = await _fire
+            .collection("chatRooms")
+            .where("roomId", isEqualTo: roomRef.id)
+            .get();
+        final create = await roomRef.collection("chatRooms").doc();
+        print("✅ Group: Room ${roomRef.id} created successfully.");
+        print("Snapshot : ${create.snapshots().toString()}");
 
-            });
-            print("Room ref ${roomRef.snapshots().first}");
+        return createSnapshot;
+      }
 
-            final createSnapshot = await _fire.collection("chatRooms")
-                .where("roomId", isEqualTo: roomRef.id).get();
-           final create = await roomRef.collection("chatRooms").doc();
-          print("✅ Group: Room ${roomRef.id} created successfully.");
-          print("Snapshot : ${create.snapshots().toString()}");
-
-
-            return createSnapshot;
-        }
-      // final snapshot1=  await _fire.collection("chatRooms")
-      //     .where("userIds", arrayContainsAny: userIds)
-      //     // .where("userIds", arrayContains: userIds[1])
-      //     .get();
-      final snapshot=  await _fire.collection("chatRooms")
-          .where("roomId", isEqualTo: chatRoomId).get();
+      final snapshot = await _fire
+          .collection("chatRooms")
+          .where("roomId", isEqualTo: chatRoomId)
+          .get();
 
       if (snapshot.docs.isNotEmpty) {
         print("❌ Found existing rooms.");
 
         return snapshot;
-
       } else {
-
-
-
         print(" ✅No existing room found.");
-
-
       }
 
-
-
       final roomRef = _fire.collection("chatRooms").doc(chatRoomId);
-      Map<String,dynamic>? message;
+      Map<String, dynamic>? message;
 
       await roomRef.set({
         "roomId": chatRoomId,
         "createdAt": FieldValue.serverTimestamp(),
-        "userIds":userIds.toList(),
+        "userIds": userIds.toList(),
         "users": users.map((user) => user.toMap()).toList(),
-        "lastMessage":message,
-        "roomType":roomType,
-        "roomName":roomName,
-        "updateAt":now,
+        "lastMessage": message,
+        "roomType": roomType,
+        "roomName": roomName,
+        "updateAt": now,
       });
 
-
-      final createSnapshot = await _fire.collection("chatRooms")
-          .where("roomId", isEqualTo: chatRoomId).get();
-       final create = roomRef.collection('chatRoom').doc();
-
+      final createSnapshot = await _fire
+          .collection("chatRooms")
+          .where("roomId", isEqualTo: chatRoomId)
+          .get();
+      final create = roomRef.collection('chatRoom').doc();
 
       print("✅ Firestore: Room '$chatRoomId' created successfully.");
       return createSnapshot;
@@ -110,10 +98,7 @@ class ChatService {
       print("❌ Error creating room: $e");
       rethrow;
     }
-
   }
-
-
 
   // Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomSnapshots(String userId) {
   //   return _fire
@@ -124,66 +109,34 @@ class ChatService {
   //
   // }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomSnapshots(String userId) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getChatRoomSnapshots(
+      String userId) {
     return _fire
         .collection('chatRooms')
         .where("userIds", arrayContains: userId)
-          // .orderBy("updateAt",descending: true)
+        // .orderBy("updateAt",descending: true)
 
-         // .orderBy("createdAt",descending: true)
+        // .orderBy("createdAt",descending: true)
         // .orderBy("lastMessage",descending: true)
 
-
-    // .orderBy("lastMessage.timestamp", descending: true)
+        // .orderBy("lastMessage.timestamp", descending: true)
         .snapshots();
-
-
   }
 
-
-  saveLastMessage(Map<String,dynamic> message, String chatRoomId) async {
+  saveLastMessage(Map<String, dynamic> message, String chatRoomId) async {
     try {
-
-      final roomRef= await _fire
-          .collection("chatRooms")
-          .doc(chatRoomId);
+      final roomRef = await _fire.collection("chatRooms").doc(chatRoomId);
       var now = DateTime.now();
 
       await roomRef.set({
         "lastMessage": message,
-        "updateAt":now,
+        "updateAt": now,
       }, SetOptions(merge: true));
-
     } catch (e) {
       rethrow;
     }
   }
 
-
-  // updateLastMessage(String currentUid, String receiverUid, String message,
-  //     int timestamp) async {
-  //   try {
-  //     await _fire.collection("users").doc(currentUid).update({
-  //       "lastMessage": {
-  //         "content": message,
-  //         "timestamp": timestamp,
-  //         "senderId": currentUid
-  //       },
-  //       "unreadCounter": FieldValue.increment(1)
-  //     });
-  //
-  //     await _fire.collection("users").doc(receiverUid).update({
-  //       "lastMessage": {
-  //         "content": message,
-  //         "timestamp": timestamp,
-  //         "senderId": currentUid,
-  //       },
-  //       "unreadCounter": 0
-  //     });
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getMessages(String chatRoomId) {
     return _fire
@@ -194,7 +147,8 @@ class ChatService {
         .snapshots();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(String chatRoomId) {
+  Stream<QuerySnapshot<Map<String, dynamic>>> getLastMessage(
+      String chatRoomId) {
     return _fire
         .collection("chatRooms")
         .doc(chatRoomId)
@@ -203,7 +157,6 @@ class ChatService {
         .limit(1)
         .snapshots();
   }
-
 
   // Future<String?> uploadImage(File file) async {
   //   try {
@@ -221,7 +174,6 @@ class ChatService {
   //     return null;
   //   }
   // }
-
 
   Future<String?> uploadImage(File file) async {
     try {
@@ -249,7 +201,4 @@ class ChatService {
       return null;
     }
   }
-
-
-
 }

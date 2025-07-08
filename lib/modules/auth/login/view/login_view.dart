@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginView extends GetView<LoginViewModel> {
-
-
   const LoginView({super.key});
 
   @override
@@ -57,7 +55,9 @@ class LoginView extends GetView<LoginViewModel> {
                 minimumSize: const Size(double.infinity, 48),
               ),
             ),
-            const SizedBox(height: 16,),
+            const SizedBox(
+              height: 16,
+            ),
 
             // Row(
             //   mainAxisAlignment: MainAxisAlignment.center,

@@ -24,39 +24,37 @@ class SignUpViewModel extends GetxController {
   // Pick image from gallery
   Future<void> pickImage() async {
     print("Tapped");
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       pickedImage.value = File(pickedFile.path);
     }
   }
 
-
   // Sign Up
-   signUp() async {
+  signUp() async {
     try {
-     final res = await _auth.createUserWithEmailAndPassword(
+      final res = await _auth.createUserWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
-     print("User created successfully");
-     print(res);
-     print(res.user!.uid);
-     String? imageUrl = pickedImage.value?.path;
-     UserModel user = UserModel(
-         uid: res.user!.uid, email: res.user!.email,name:nameController.text,imageUrl: imageUrl );
+      print("User created successfully");
+      print(res);
+      print(res.user!.uid);
+      String? imageUrl = pickedImage.value?.path;
+      UserModel user = UserModel(
+          uid: res.user!.uid,
+          email: res.user!.email,
+          name: nameController.text,
+          imageUrl: imageUrl);
 
-     db.saveUser(user.toMap());
+      db.saveUser(user.toMap());
 
-     if(res.user!.uid != null)
-       {
-         Get.offAndToNamed(AppRoutes.LOGIN);
-       }
-
+      if (res.user!.uid != null) {
+        Get.offAndToNamed(AppRoutes.LOGIN);
+      }
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
   }
-
 }
-
-

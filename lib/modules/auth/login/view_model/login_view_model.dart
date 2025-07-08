@@ -11,59 +11,50 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginViewModel extends GetxController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
-    DatabaseService databaseService = DatabaseService();
+  DatabaseService databaseService = DatabaseService();
   User? currentUser;
 
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final signInController = TextEditingController();
 
-
   final isLoading = false.obs;
 
   void onInit() {
     super.onInit();
     print("Called on init");
-
-
   }
 
   Future<void> getDeviceToken() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-
     try {
       String? token = await messaging.getToken();
       print("✅ Device Token: $token");
-      PreferenceManager.writeData(key: 'device-token', value:token );
-
+      PreferenceManager.writeData(key: 'device-token', value: token);
     } catch (e) {
       print("❌ Error getting device token: $e");
     }
   }
 
   // Sign In
-   logIn() async {
+  logIn() async {
     try {
       print("Login model view");
-   final res =   await _auth.signInWithEmailAndPassword(
+      final res = await _auth.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
 
-   PreferenceManager.writeData(key: 'user-id', value: res.user!.uid);
+      PreferenceManager.writeData(key: 'user-id', value: res.user!.uid);
 
-   if(res.user != null)
-     {
-
+      if (res.user != null) {
         Get.offAndToNamed(AppRoutes.ROOMLIST);
-     }
-
+      }
     } on FirebaseAuthException catch (e) {
       return e.message;
     }
   }
-
 
 //  Google Sign-In
 //   Future<void> signInWithGoogle() async {
@@ -125,7 +116,6 @@ class LoginViewModel extends GetxController {
 //     }
 //   }
 
-
   Future<void> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -133,7 +123,8 @@ class LoginViewModel extends GetxController {
 
       if (googleUser == null) return;
 
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
 
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -149,18 +140,17 @@ class LoginViewModel extends GetxController {
 
       final client = await databaseService.loadUser(user.uid);
 
-       PreferenceManager.writeData(key: 'user-id', value: user.uid);
+      PreferenceManager.writeData(key: 'user-id', value: user.uid);
 
       if (client != null) {
         final currentClient = UserModel(
-          uid: client['uid'],
-          email: client['email'],
-          name: client['name'],
-          imageUrl: client['imageURL'], deviceToken: PreferenceManager.readData(key: 'device-token') ?? ' '
-        );
-        // await databaseService.saveUser(currentClient.toMap());
-        // await databaseService.updateDeviceToken(PreferenceManager.readData(key: 'user-id'),  PreferenceManager.readData(key: 'device-token'));
-        // print("Logged in existing user: ${currentClient.email}");
+            uid: client['uid'],
+            email: client['email'],
+            name: client['name'],
+            imageUrl: client['imageURL'],
+            deviceToken:
+                PreferenceManager.readData(key: 'device-token') ?? ' ');
+
         Get.offNamed(AppRoutes.ROOMLIST);
       } else {
         final newUser = UserModel(
@@ -183,6 +173,4 @@ class LoginViewModel extends GetxController {
       Get.snackbar("Google Sign-In Failed", e.toString());
     }
   }
-
-
 }

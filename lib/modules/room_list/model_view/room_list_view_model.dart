@@ -13,7 +13,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:get/get.dart';
 import 'dart:convert';
 
-
 class RoomListViewModel extends GetxController {
   final ChatService _chatService = ChatService();
   final DatabaseService db = DatabaseService();
@@ -26,10 +25,8 @@ class RoomListViewModel extends GetxController {
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   Timer? _timer;
-  int _counter = 0;
+
   RxBool isLoading = false.obs;
-
-
 
   @override
   void onInit() {
@@ -38,31 +35,24 @@ class RoomListViewModel extends GetxController {
     fetchUsers();
     setupFCM();
     getTimeUpdate();
-
-
-
-
-
   }
+
   Future<void> getDeviceToken() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
-
 
     try {
       String? token = await messaging.getToken();
       print("✅ Device Token: $token");
-      PreferenceManager.writeData(key: PrefKey.DEVICE_UNIQUE, value:token );
-
+      PreferenceManager.writeData(key: PrefKey.DEVICE_UNIQUE, value: token);
     } catch (e) {
       print("❌ Error getting device token: $e");
     }
   }
 
   Future<void> fetchChatRooms() async {
-    isLoading.value=true;
+    isLoading.value = true;
     var userID = PreferenceManager.readData(key: 'user-id');
-    await db.updateDeviceToken(PrefKey.userID,PrefKey.DEVICE_UNIQUE);
-
+    await db.updateDeviceToken(PrefKey.userID, PrefKey.DEVICE_UNIQUE);
 
     _chatService.getChatRoomSnapshots(userID).listen((snapshot) {
       print('snapshot data: ${snapshot.docs}');
@@ -71,27 +61,20 @@ class RoomListViewModel extends GetxController {
           .toList();
 
       chatRooms.sort((a, b) => b.updateAt.compareTo(a.updateAt));
-
     }, onError: (e) {
       print(" Error fetching chat rooms: $e");
     });
 
-
     fetchLastMessges();
-    isLoading.value=false;
-
-
+    isLoading.value = false;
   }
 
   fetchLastMessges() async {
     print("Last msg");
 
-    var loggedInUserID = PreferenceManager.readData(key: 'user-id');
-
     try {
-        print("Chat room length ${chatRooms.length}");
+      print("Chat room length ${chatRooms.length}");
       for (int i = 0; i < chatRooms.length; i++) {
-
         final room = chatRooms[i];
         print("index ${room.userIds}");
 
@@ -100,15 +83,11 @@ class RoomListViewModel extends GetxController {
             var doc = snapshot.docs.first;
             print("Document${doc.data()}");
             final message = Message.fromMap(doc.data());
-
-
-
           } else {
             print("No message found for chat room: ${room.roomId}");
           }
         });
       }
-
     } catch (e) {
       log("Error fetching last messages: $e");
     }
@@ -117,74 +96,61 @@ class RoomListViewModel extends GetxController {
   fetchUsers() async {
     try {
       db.fetchUserStream(userID).listen((data) {
-        users.value = data.docs.map((e) => UserModel.fromMap(e.data())).toList();
+        users.value =
+            data.docs.map((e) => UserModel.fromMap(e.data())).toList();
       });
-
     } catch (e) {
-
       log("Error Fetching Users: $e");
     }
   }
 
- Future<ChatRoomModel?> createRoom(String receiverID,String name, String image) async {
-    isLoading.value=true;
+  Future<ChatRoomModel?> createRoom(
+      String receiverID, String name, String image) async {
+    isLoading.value = true;
     print(" ✅ Circular Loading ${isLoading}");
 
     print(receiverID);
 
     try {
-
       final now = DateTime.now();
 
-
-      String chatRoomID ="${userID}_${receiverID}";
-      final client =  await db.loadUser(userID);
-      final user= UserModel.fromMap(client as Map<String, dynamic>);
+      String chatRoomID = "${userID}_${receiverID}";
+      final client = await db.loadUser(userID);
+      final user = UserModel.fromMap(client as Map<String, dynamic>);
       print("user:${user}");
-
-
 
       final user1 = UserModel(
         name: user.name!,
         uid: userID,
         imageUrl: user.imageUrl,
-
       );
       final user2 = UserModel(
         name: name,
-        uid : receiverID,
+        uid: receiverID,
         imageUrl: image,
-
       );
-      var partner = UserModel(name:name,uid: receiverID);
-      List<String>userIds=[userID,receiverID];
 
+      List<String> userIds = [userID, receiverID];
 
-       var result = await _chatService.createRoom([user1,user2],userIds,'Single','');
+      var result =
+          await _chatService.createRoom([user1, user2], userIds, 'Single', '');
 
-
-      if(result.docs.isNotEmpty) {
+      if (result.docs.isNotEmpty) {
         var responseData = ChatRoomModel.fromMap(result.docs.first.data());
-        isLoading.value=false;
+        isLoading.value = false;
         return responseData;
-
       } else {
-        isLoading.value=false;
+        isLoading.value = false;
         return null;
       }
-
-
-
     } catch (e) {
       rethrow;
     }
   }
 
-
   Future<void> setupFCM() async {
     FirebaseMessaging messaging = FirebaseMessaging.instance;
     String? fcmToken = '';
-
 
     // Ask for permission (iOS only)
     NotificationSettings settings = await messaging.requestPermission(
@@ -214,20 +180,42 @@ class RoomListViewModel extends GetxController {
     }
   }
 
-getTimeUpdate()
-{
-  var userID = PreferenceManager.readData(key: 'user-id');
-  _timer = Timer.periodic(Duration(seconds: 5), (timer) {
-    // print("⏰ Update at ${DateTime.now()} - counter: $_counter");
+  getTimeUpdate() {
+    var userID = PreferenceManager.readData(key: 'user-id');
+    _timer = Timer.periodic(Duration(seconds: 5), (timer) {
+      // print("⏰ Update at ${DateTime.now()} - counter: $_counter");
+
+      db.updateTime(userID, Timestamp.now());
+    });
+  }
 
 
-    db.updateTime(userID,Timestamp.now() );
+  bool isEmoji(String input) {
+    print("Print the emoji ${input}");
+    if (input.isEmpty) return false;
+    final codePoints = input.runes;
 
-  });
-
-  // print("Activeness : ${_timer!.isActive}");
-
-}
-
+    for (var code in codePoints) {
+      if (
+      // Emoticons
+      (code >= 0x1F600 && code <= 0x1F64F) ||
+          // Misc Symbols and Pictographs
+          (code >= 0x1F300 && code <= 0x1F5FF) ||
+          // Transport and Map Symbols
+          (code >= 0x1F680 && code <= 0x1F6FF) ||
+          // Misc symbols
+          (code >= 0x2600 && code <= 0x26FF) ||
+          // Dingbats
+          (code >= 0x2700 && code <= 0x27BF) ||
+          // Supplemental Symbols and Pictographs
+          (code >= 0x1F900 && code <= 0x1F9FF) ||
+          // Extended pictographic range
+          (code >= 0x1FA70 && code <= 0x1FAFF)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
 
 }

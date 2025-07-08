@@ -9,8 +9,7 @@ import 'package:chat_app/core/services/preference_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class GroupChatCreationViewModel extends GetxController{
-
+class GroupChatCreationViewModel extends GetxController {
   final ChatService _chatService = ChatService();
   final DatabaseService db = DatabaseService();
   final currentReceiver = UserModel();
@@ -18,15 +17,14 @@ class GroupChatCreationViewModel extends GetxController{
   RxList<Message> messages = <Message>[].obs;
   RxList<String> lastMessages = <String>[].obs;
   RxSet<String> selectedUserIds = <String>{}.obs;
+  final RxList<UserModel> friendsList = <UserModel>[].obs;
+  RxBool isValidate = false.obs;
+
   final userID = PreferenceManager.readData(key: 'user-id');
 
   RxList<ChatRoomModel> chatRooms = <ChatRoomModel>[].obs;
-
-  // final TextEditingController groupNameController = TextEditingController();
-  // RxString? groupName ="".obs;
   TextEditingController groupNameController = TextEditingController();
   RxBool isLoading = false.obs;
-
 
   @override
   void onInit() {
@@ -34,12 +32,10 @@ class GroupChatCreationViewModel extends GetxController{
     print("Called on init");
 
     fetchUsers();
+    validate();
     selectedUserIds.clear();
     print("Selected user Id list ${selectedUserIds.length}");
-
-
   }
-
 
   // void fetchChatRooms() {
   //   var userID = PreferenceManager.readData(key: 'user-id');
@@ -58,16 +54,12 @@ class GroupChatCreationViewModel extends GetxController{
   //
   // }
 
-
   fetchLastMessges() async {
     print("Last msg");
-
-    var loggedInUserID = PreferenceManager.readData(key: 'user-id');
 
     try {
       print("Chat room length ${chatRooms.length}");
       for (int i = 0; i < chatRooms.length; i++) {
-
         final room = chatRooms[i];
         print("index ${room.userIds}");
 
@@ -76,15 +68,11 @@ class GroupChatCreationViewModel extends GetxController{
             var doc = snapshot.docs.first;
             print("Document${doc.data()}");
             final message = Message.fromMap(doc.data());
-
-
-
           } else {
             print("No message found for chat room: ${room.roomId}");
           }
         });
       }
-
     } catch (e) {
       log("Error fetching last messages: $e");
     }
@@ -93,70 +81,55 @@ class GroupChatCreationViewModel extends GetxController{
   fetchUsers() async {
     try {
       db.fetchUserStream(userID).listen((data) {
-        users.value = data.docs.map((e) => UserModel.fromMap(e.data())).toList();
+        users.value =
+            data.docs.map((e) => UserModel.fromMap(e.data())).toList();
       });
-
     } catch (e) {
-
       log("Error Fetching Users: $e");
     }
   }
 
-  Future<ChatRoomModel?> createRoom(List<UserModel>friendList,String roomName) async {
-
+  Future<ChatRoomModel?> createRoom(
+      List<UserModel> friendList, String roomName) async {
     try {
-      final now = DateTime.now();
       isLoading.value = true;
 
-
-      // String chatRoomID = "${userID}_${receiverID}";
       final client = await db.loadUser(userID);
       final user = UserModel.fromMap(client as Map<String, dynamic>);
       print("user:${user}");
-
 
       final user1 = UserModel(
         name: user.name!,
         uid: userID,
         imageUrl: user.imageUrl,
-
       );
 
-      // final user2 = UserModel(
-      //   name: name,
-      //   uid: receiverID,
-      //   imageUrl: image,
-      //
-      // );
       friendList.add(user1);
-      // var partner = UserModel(name: name, uid: receiverID);
-      // List<String?> userIds = friendList.map((u) => u.uid).toList();
-
-      // List<String>userIds=[];
-      //  for(var i in friendList)
-      //    {
-      //      userIds.add(i.uid);
-      //    }
 
       List<String> userIds = friendList.map((u) => u.uid!).toList();
 
-      var result = await _chatService.createRoom(friendList,userIds,'Group',roomName);
+      var result =
+          await _chatService.createRoom(friendList, userIds, 'Group', roomName);
       friendList.clear();
-
 
       if (result.docs.isNotEmpty) {
         var responseData = ChatRoomModel.fromMap(result.docs.first.data());
-        isLoading.value=false;
+        isLoading.value = false;
 
         return responseData;
       } else {
-        isLoading.value=false;
+        isLoading.value = false;
         return null;
-
       }
     } catch (e) {
       rethrow;
     }
   }
 
+  validate() {
+    isValidate.value =
+        friendsList.isNotEmpty && groupNameController.text.isNotEmpty;
+    print("Validation : ${isValidate}");
+    update();
   }
+}
